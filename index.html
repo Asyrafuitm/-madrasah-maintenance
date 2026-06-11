@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pengurusan Penyelenggaraan Madrasah</title>
+    <title>Facilities &amp; Assets Management System</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -983,6 +983,22 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
+        .insight-item {
+            background: linear-gradient(135deg, #F0FFF4, #E8F5E9);
+            border-left: 4px solid var(--green);
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #333;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .insight-item:last-child {
+            margin-bottom: 0;
+        }
+
         .toast {
             position: fixed;
             top: 20px;
@@ -1070,11 +1086,64 @@
             .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
+        @media (max-width: 480px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        /* MOBILE SIDEBAR TOGGLE */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 300;
+            background: var(--green-dark);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0;
+        }
+        .sidebar-toggle:hover {
+            background: var(--green);
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 199;
+        }
+        .sidebar-overlay.show {
+            display: block;
+        }
+
         @media (max-width: 768px) {
+            .sidebar-toggle { display: flex; }
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                position: fixed;
+                z-index: 200;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
             .header-inner {
                 flex-direction: column;
                 text-align: center;
                 gap: 10px;
+                padding-top: 50px;
             }
             .header-text h1 { font-size: 1.2rem; }
             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1087,8 +1156,349 @@
             .search-box { min-width: 100%; }
         }
 
-        @media (max-width: 480px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
+        /* INVENTORY STOCK LEVELS */
+        .stock-ok { color: #155724; background: #D4EDDA; }
+        .stock-low { color: #856404; background: #FFF3CD; }
+        .stock-critical { color: #721C24; background: #F8D7DA; }
+        .stock-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .stock-reorder-alert {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            animation: pulse-urgent 1.5s infinite;
+        }
+
+        /* STAR RATING */
+        .star-rating {
+            display: inline-flex;
+            gap: 2px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .star-rating .star {
+            color: #DDD;
+            transition: color 0.2s;
+            min-width: 22px;
+            min-height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .star-rating .star.active,
+        .star-rating .star:hover,
+        .star-rating .star:hover ~ .star {
+            color: #F4A261;
+        }
+        .star-rating[data-rating]:hover .star { color: #DDD; }
+        .star-rating[data-rating]:hover .star[data-index] {
+            color: #F4A261;
+        }
+        .star-rating[data-rating]:hover .star[data-index] ~ .star { color: #DDD; }
+
+        /* WORK PERMIT WORKFLOW */
+        .workflow-steps {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .workflow-step {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #F0F0F0;
+            color: #999;
+            white-space: nowrap;
+        }
+        .workflow-step.completed {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        .workflow-step.current {
+            background: #CCE5FF;
+            color: #004085;
+            box-shadow: 0 0 0 2px #004085;
+        }
+        .workflow-step .wf-icon { font-size: 0.8rem; }
+        .workflow-arrow { color: #CCC; font-size: 0.7rem; }
+
+        /* ASSET DETAIL MODAL */
+        .asset-detail-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #E0E0E0;
+        }
+        .asset-detail-tab {
+            padding: 8px 18px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--gray);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .asset-detail-tab:hover { color: var(--green); }
+        .asset-detail-tab.active {
+            color: var(--green-dark);
+            border-bottom-color: var(--green);
+        }
+        .asset-detail-pane { display: none; }
+        .asset-detail-pane.active { display: block; }
+        .modal.modal-wide { max-width: 700px; }
+        .edit-modal-wide { max-width: 650px; }
+        .inv-usage-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+        .inv-usage-item { display:flex; justify-content:space-between; align-items:center; background:#f8f9fa; border-radius:8px; padding:6px 12px; margin:4px 0; }
+        .inv-usage-item .item-name { font-weight:500; flex:1; }
+        .inv-usage-item .item-qty { color:var(--green-dark); font-weight:600; margin:0 12px; }
+        .inv-usage-item .item-remove { cursor:pointer; color:#dc3545; font-size:1.2rem; line-height:1; }
+        .inv-usage-badge { display:inline-block; background:#e8f5e9; color:#1B4332; border:1px solid #52B788; border-radius:12px; padding:3px 10px; font-size:0.85rem; margin:2px; }
+        .history-item {
+            padding: 10px 12px;
+            border-left: 3px solid var(--green-lighter);
+            background: var(--gray-light);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 8px;
+        }
+        .history-item .h-date { font-size: 0.78rem; color: var(--gray); }
+        .history-item .h-title { font-weight: 600; font-size: 0.9rem; margin: 2px 0; }
+        .history-item .h-desc { font-size: 0.85rem; color: #555; }
+        .history-item .h-meta { font-size: 0.78rem; color: var(--gray); margin-top: 4px; }
+        .history-form-toggle {
+            background: none;
+            border: none;
+            color: var(--green);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .history-form-toggle:hover { color: var(--green-dark); }
+        .asset-report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .asset-insight-item {
+            background: linear-gradient(135deg, #F0FFF4, #E8F5E9);
+            border-left: 4px solid var(--green);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        /* SIDEBAR & LAYOUT */
+        .app-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: #1B4332;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 200;
+            overflow-y: auto;
+        }
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-logo-icon { font-size: 1.8rem; }
+        .sidebar-logo-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .sidebar-menu { flex: 1; padding: 10px 0; }
+        .sidebar-item { cursor: pointer; }
+        .sidebar-item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            transition: background 0.2s;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .sidebar-item-header:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-item.active > .sidebar-item-header {
+            background: rgba(255,255,255,0.12);
+            border-left: 4px solid var(--gold-light);
+            padding-left: 16px;
+        }
+        .sidebar-item-icon { font-size: 1.1rem; width: 24px; text-align: center; }
+        .sidebar-arrow { margin-left: auto; font-size: 0.7rem; transition: transform 0.3s; }
+        .sidebar-item.active .sidebar-arrow { transform: rotate(180deg); }
+        .sidebar-submenu {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+            background: rgba(0,0,0,0.15);
+        }
+        .sidebar-submenu.open { max-height: 200px; }
+        .sidebar-subitem {
+            padding: 10px 20px 10px 56px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .sidebar-subitem:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-subitem.active {
+            background: rgba(255,255,255,0.15);
+            font-weight: 700;
+            border-left: 3px solid var(--gold-light);
+            padding-left: 53px;
+        }
+        .sidebar-user {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+        .sidebar-user-icon { font-size: 1rem; }
+        .sidebar-logout {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .sidebar-logout:hover { background: rgba(255,255,255,0.25); }
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+        .section { display: none; }
+        .section.active { display: block; }
+        .header { padding: 10px 0; }
+        .header .header-text h1 { font-size: 1.2rem; }
+        .header .header-text p { font-size: 0.75rem; }
+
+        /* REPORT / PRINT STYLES */
+        .no-print { }
+        .filter-bar-select, .filter-bar-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            background: white;
+            color: #333;
+        }
+        .filter-bar-select:focus, .filter-bar-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .report-table th {
+            background: var(--green-dark);
+            color: white;
+            padding: 10px 12px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .report-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .report-table tr:nth-child(even) td {
+            background: #F9FFFA;
+        }
+        .report-table tr:hover td {
+            background: #E8F5E9;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--green-dark);
+        }
+        .report-header h2 {
+            color: var(--green-dark);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .report-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .report-footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+        }
+
+        @media print {
+            body { background: white; }
+            .sidebar, .sidebar-overlay, .header, .hamburger-toggle, .tab-nav, .modal-overlay,
+            #loginScreen, .btn, .no-print { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+            #section-facilities { display: block !important; }
+            .section-card { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
+            .report-table th { background: #1B4332 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .report-table tr:nth-child(even) td { background: #F9FFFA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .report-meta { color: #333 !important; }
+            .dashboard-grid { page-break-inside: avoid; }
+            .insight-item { page-break-inside: avoid; }
+            @page { margin: 15mm; }
         }
     </style>
 </head>
@@ -1098,7 +1508,7 @@
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <div class="login-icon">🕌</div>
-            <h2>Sistem Penyelenggaraan Madrasah</h2>
+            <h2>Facilities &amp; Assets Management System</h2>
             <p>Sila log masuk untuk meneruskan</p>
             <form class="login-form" id="loginForm">
                 <input type="text" id="loginUsername" placeholder="Nama pengguna" required autofocus>
@@ -1114,13 +1524,77 @@
 
     <!-- MAIN APP -->
     <div id="app" style="display:none;">
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-icon">🕌</div>
+                <div class="sidebar-logo-text">FAMS</div>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="sidebar-item active" data-section="facilities">
+                    <div class="sidebar-item-header" onclick="toggleFacilitiesSubmenu(event)">
+                        <span class="sidebar-item-icon">📋</span>
+                        <span class="sidebar-item-label">Fasiliti</span>
+                        <span class="sidebar-arrow">▼</span>
+                    </div>
+                    <div class="sidebar-submenu open">
+                        <div class="sidebar-subitem active" data-subtab="dashboard">📊 Dashboard</div>
+                        <div class="sidebar-subitem" data-subtab="request">➕ Permohonan Baru</div>
+                        <div class="sidebar-subitem" data-subtab="tracking">📋 Progress</div>
+                        <div class="sidebar-subitem" data-subtab="laporan">📊 Laporan</div>
+                    </div>
+                </div>
+                <div class="sidebar-item" data-section="assets">
+                    <div class="sidebar-item-header" onclick="switchSection('assets')">
+                        <span class="sidebar-item-icon">🏗️</span>
+                        <span class="sidebar-item-label">Aset</span>
+                    </div>
+                </div>
+                <div class="sidebar-item" data-section="schedule">
+                    <div class="sidebar-item-header" onclick="switchSection('schedule')">
+                        <span class="sidebar-item-icon">📅</span>
+                        <span class="sidebar-item-label">Jadual</span>
+                    </div>
+                </div>
+                <div class="sidebar-item" data-section="inventory">
+                    <div class="sidebar-item-header" onclick="switchSection('inventory')">
+                        <span class="sidebar-item-icon">📦</span>
+                        <span class="sidebar-item-label">Inventory</span>
+                    </div>
+                </div>
+                <div class="sidebar-item" data-section="vendors">
+                    <div class="sidebar-item-header" onclick="switchSection('vendors')">
+                        <span class="sidebar-item-icon">🏢</span>
+                        <span class="sidebar-item-label">Vendor</span>
+                    </div>
+                </div>
+                <div class="sidebar-item" data-section="workpermit">
+                    <div class="sidebar-item-header" onclick="switchSection('workpermit')">
+                        <span class="sidebar-item-icon">🔐</span>
+                        <span class="sidebar-item-label">Work Permit</span>
+                    </div>
+                </div>
+            </nav>
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <span class="sidebar-user-icon">👤</span>
+                    <span class="sidebar-user-name" id="sidebarUser"></span>
+                </div>
+                <button class="sidebar-logout" onclick="doLogout()">Log Keluar</button>
+            </div>
+        </aside>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="header">
         <div class="header-inner">
             <div class="header-brand">
                 <div class="header-icon">🕌</div>
                 <div class="header-text">
-                    <h1>Sistem Penyelenggaraan Madrasah</h1>
-                    <p>Permohonan · Progress · Pemantauan</p>
+                    <h1>Facilities &amp; Assets Management System</h1>
+                    <p>Request · Progress · Monitoring</p>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:15px;color:white;">
@@ -1132,10 +1606,12 @@
     </div>
 
     <div class="container">
+        <div id="section-facilities" class="section active">
         <nav class="tab-nav">
             <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
             <button class="tab-btn" data-tab="request">➕ Permohonan Baru</button>
             <button class="tab-btn" data-tab="tracking">📋 Progress <span class="badge" id="totalBadge">0</span></button>
+            <button class="tab-btn" data-tab="laporan">📊 Laporan</button>
         </nav>
 
         <!-- TAB: DASHBOARD -->
@@ -1367,10 +1843,485 @@
             </div>
         </div>
 
-        <!-- TAB: AUDIT LOG -->
+        <!-- TAB: LAPORAN -->
+        <div id="laporan" class="tab-content">
+            <div class="section-card">
+                <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <span>📊 Laporan &amp; Analisis</span>
+                    <div class="report-actions no-print" style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <select id="reportType" class="filter-bar-select" onchange="renderLaporan()">
+                            <option value="work">Work Request Summary</option>
+                            <option value="asset">Laporan Aset</option>
+                            <option value="schedule">Laporan Jadual</option>
+                            <option value="inventory">Laporan Inventory</option>
+                        </select>
+                        <input type="date" id="reportDateFrom" class="filter-bar-input" style="width:145px;">
+                        <input type="date" id="reportDateTo" class="filter-bar-input" style="width:145px;">
+                        <button class="btn btn-sm btn-secondary" onclick="renderLaporan()">🔄 Refresh</button>
+                        <button class="btn btn-sm btn-primary" onclick="printReport()">🖨️ Cetak PDF</button>
+                    </div>
+                </div>
+                <div class="dashboard-grid" id="reportSummary"></div>
+                <div id="reportTableContainer" style="margin-top:20px;"></div>
+                <div id="insightContainer" style="margin-top:20px;"></div>
+            </div>
+        </div>
+        </div>
+
+        <!-- ASSETS SECTION -->
+        <div id="section-assets" class="section">
+            <div class="section-card">
+                <div class="section-title">🏗️ Pengurusan Aset</div>
+                <form id="assetForm" class="form-grid">
+                    <div class="form-group">
+                        <label>Nama Aset</label>
+                        <input type="text" id="assetName" placeholder="Cth: Projektor LCD" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="assetCategory" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Elektronik">Elektronik</option>
+                            <option value="Perabot">Perabot</option>
+                            <option value="Kenderaan">Kenderaan</option>
+                            <option value="Bangunan">Bangunan</option>
+                            <option value="IT">IT</option>
+                            <option value="Lain-lain">Lain-lain</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokasi</label>
+                        <input type="text" id="assetLocation" placeholder="Cth: Bilik Darjah 3" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tarikh Belian</label>
+                        <input type="date" id="assetDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Keadaan</label>
+                        <select id="assetCondition" required>
+                            <option value="Baik">Baik</option>
+                            <option value="Isu Kecil">Isu Kecil</option>
+                            <option value="Isu Besar">Isu Besar</option>
+                            <option value="Dilupuskan">Dilupuskan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>No. Siri / Serial No (Optional)</label>
+                        <input type="text" id="assetSerial" placeholder="Cth: SN-2024-001">
+                    </div>
+                    <div class="form-group">
+                        <label>Jenama / Brand (Optional)</label>
+                        <input type="text" id="assetBrand" placeholder="Cth: Sony">
+                    </div>
+                    <div class="form-group">
+                        <label>Model (Optional)</label>
+                        <input type="text" id="assetModel" placeholder="Cth: XBR-65X900F">
+                    </div>
+                    <div class="form-group">
+                        <label>Harga Belian (RM) (Optional)</label>
+                        <input type="number" id="assetPrice" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Tarikh Tamat Waranti (Optional)</label>
+                        <input type="date" id="assetWarranty">
+                    </div>
+                    <div class="form-group">
+                        <label>Jabatan / Pemilik (Optional)</label>
+                        <input type="text" id="assetDepartment" placeholder="Cth: Pejabat Guru Besar">
+                    </div>
+                    <div class="form-group">
+                        <label>Status Penggunaan</label>
+                        <select id="assetStatus">
+                            <option value="available">Tersedia</option>
+                            <option value="in use">Digunakan</option>
+                            <option value="under repair">Dalam Baik Pulih</option>
+                            <option value="disposed">Dilupuskan</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Catatan</label>
+                        <textarea id="assetNotes" placeholder="Catatan tentang aset..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Set Semula</button>
+                        <button type="submit" class="btn btn-primary">Daftar Aset</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">📋 Senarai Aset <span class="count-badge" id="assetCount">0</span></div>
+                <div id="assetEmpty" class="empty-state">
+                    <div class="icon">📦</div>
+                    <p>Tiada aset didaftarkan</p>
+                    <p class="sub">Sila daftar aset baru menggunakan borang di atas</p>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Aset</th>
+                                <th>Kategori</th>
+                                <th>Lokasi</th>
+                                <th>Tarikh Belian</th>
+                                <th>Keadaan</th>
+                                <th>Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assetTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Asset Reporting -->
+            <div class="section-card" id="assetReportSection">
+                <div class="section-title">📊 Laporan & Analisis Aset</div>
+                <div class="asset-report-grid" id="assetReportGrid"></div>
+                <div id="assetInsightContainer"></div>
+            </div>
+        </div>
+
+        <!-- ASSET DETAIL MODAL -->
+        <div class="modal-overlay" id="assetDetailModal">
+            <div class="modal modal-wide">
+                <h3 id="assetModalTitle">📋 Butiran Aset</h3>
+                <div class="asset-detail-tabs">
+                    <button class="asset-detail-tab active" data-asset-tab="info" onclick="switchAssetTab('info')">📄 Info</button>
+                    <button class="asset-detail-tab" data-asset-tab="maintenance" onclick="switchAssetTab('maintenance')">🔧 Penyelenggaraan</button>
+                    <button class="asset-detail-tab" data-asset-tab="lokasi" onclick="switchAssetTab('lokasi')">📍 Lokasi</button>
+                </div>
+                <div id="assetModalBody"></div>
+                <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="btn btn-secondary btn-sm" onclick="closeAssetModal()">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCHEDULE SECTION -->
+        <div id="section-schedule" class="section">
+            <div class="section-card">
+                <div class="section-title">📅 Jadual Tugasan Rutin</div>
+                <form id="scheduleForm" class="form-grid">
+                    <div class="form-group">
+                        <label>Nama Tugasan</label>
+                        <input type="text" id="schedName" placeholder="Cth: Pembersihan longkang" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kekerapan</label>
+                        <select id="schedFrequency" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Harian">Harian</option>
+                            <option value="Mingguan">Mingguan</option>
+                            <option value="Bulanan">Bulanan</option>
+                            <option value="Sekali">Sekali</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokasi</label>
+                        <input type="text" id="schedLocation" placeholder="Cth: Dewan Serbaguna" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Diberi Kepada</label>
+                        <input type="text" id="schedAssignee" placeholder="Nama petugas" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Catatan</label>
+                        <textarea id="schedNotes" placeholder="Catatan tentang tugasan..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Set Semula</button>
+                        <button type="submit" class="btn btn-primary">Tambah Tugasan</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">📋 Senarai Tugasan <span class="count-badge" id="scheduleCount">0</span></div>
+                <div id="scheduleEmpty" class="empty-state">
+                    <div class="icon">📅</div>
+                    <p>Tiada tugasan dijadualkan</p>
+                    <p class="sub">Sila tambah tugasan baru menggunakan borang di atas</p>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Tugasan</th>
+                                <th>Kekerapan</th>
+                                <th>Lokasi</th>
+                                <th>Petugas</th>
+                                <th>Status</th>
+                                <th>Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- INVENTORY SECTION -->
+        <div id="section-inventory" class="section">
+            <div class="section-card">
+                <div class="section-title">📦 Pengurusan Inventory</div>
+                <form id="inventoryForm" class="form-grid">
+                    <div class="form-group">
+                        <label>Nama Spare Part</label>
+                        <input type="text" id="invName" placeholder="Cth: Fius 13A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="invCategory" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Elektrikal">Elektrikal</option>
+                            <option value="Mekanikal">Mekanikal</option>
+                            <option value="Penapis">Penapis</option>
+                            <option value="Lain">Lain</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kuantiti Stok</label>
+                        <input type="number" id="invQty" placeholder="0" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Stok</label>
+                        <input type="number" id="invMin" placeholder="0" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokasi Simpanan</label>
+                        <input type="text" id="invLocation" placeholder="Cth: Rak A, Kabinet 3" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga/Unit (RM)</label>
+                        <input type="number" id="invPrice" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Pembekal</label>
+                        <input type="text" id="invSupplier" placeholder="Nama pembekal">
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Set Semula</button>
+                        <button type="submit" class="btn btn-primary">Tambah Item</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">📋 Senarai Inventory <span class="count-badge" id="inventoryCount">0</span></div>
+                <div id="inventoryEmpty" class="empty-state">
+                    <div class="icon">📦</div>
+                    <p>Tiada item inventory</p>
+                    <p class="sub">Sila tambah item menggunakan borang di atas</p>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Item</th>
+                                <th>Kategori</th>
+                                <th>Stok</th>
+                                <th>Min Stok</th>
+                                <th>Lokasi</th>
+                                <th>Harga/Unit</th>
+                                <th>Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">🤖 AI Insights — Inventory</div>
+                <div id="inventoryInsightContainer"></div>
+            </div>
+        </div>
+
+        <!-- VENDORS SECTION -->
+        <div id="section-vendors" class="section">
+            <div class="section-card">
+                <div class="section-title">🏢 Pengurusan Vendor</div>
+                <form id="vendorForm" class="form-grid">
+                    <div class="form-group">
+                        <label>Nama Syarikat</label>
+                        <input type="text" id="venName" placeholder="Cth: Syarikat ABC Sdn Bhd" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Perkhidmatan</label>
+                        <select id="venService" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="AC">AC</option>
+                            <option value="General">General</option>
+                            <option value="Building">Building</option>
+                            <option value="IT">IT</option>
+                            <option value="Landscaping">Landscaping</option>
+                            <option value="Cleaning">Cleaning</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>No Telefon</label>
+                        <input type="text" id="venPhone" placeholder="012-3456789" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emel</label>
+                        <input type="email" id="venEmail" placeholder="email@syarikat.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <input type="text" id="venAddress" placeholder="Alamat syarikat">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="venStatus">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Catatan</label>
+                        <textarea id="venNotes" placeholder="Catatan tentang vendor..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Set Semula</button>
+                        <button type="submit" class="btn btn-primary">Daftar Vendor</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">📋 Senarai Vendor <span class="count-badge" id="vendorCount">0</span></div>
+                <div id="vendorEmpty" class="empty-state">
+                    <div class="icon">🏢</div>
+                    <p>Tiada vendor didaftarkan</p>
+                    <p class="sub">Sila daftar vendor menggunakan borang di atas</p>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Syarikat</th>
+                                <th>Perkhidmatan</th>
+                                <th>Telefon</th>
+                                <th>Status</th>
+                                <th>Rating</th>
+                                <th>Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vendorTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">🤖 AI Insights — Vendor</div>
+                <div id="vendorInsightContainer"></div>
+            </div>
+        </div>
+
+        <!-- WORK PERMIT SECTION -->
+        <div id="section-workpermit" class="section">
+            <div class="section-card">
+                <div class="section-title">🔐 Pengurusan Work Permit</div>
+                <form id="workpermitForm" class="form-grid">
+                    <div class="form-group">
+                        <label>No Permit (Auto)</label>
+                        <input type="text" id="wpNo" readonly style="background:#E8F5E9;border-color:var(--green-lighter);font-weight:600;color:var(--green-dark);">
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Kontraktor</label>
+                        <input type="text" id="wpContractor" placeholder="Nama kontraktor" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Kerja</label>
+                        <input type="text" id="wpWorkType" placeholder="Cth: Pendawaian Elektrik" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokasi</label>
+                        <input type="text" id="wpLocation" placeholder="Cth: Blok A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tarikh Mula</label>
+                        <input type="date" id="wpStart" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tarikh Tamat</label>
+                        <input type="date" id="wpEnd" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Penyelia Bertugas</label>
+                        <input type="text" id="wpSupervisor" placeholder="Nama penyelia" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Catatan Keselamatan</label>
+                        <textarea id="wpSafetyNotes" placeholder="Catatan keselamatan..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Senarai Semak Keselamatan</label>
+                        <div id="safetyChecklist">
+                            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:5px;">
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:0.9rem;min-height:44px;cursor:pointer;">
+                                    <input type="checkbox" class="safety-check" value="APD lengkap"> APD lengkap
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:0.9rem;min-height:44px;cursor:pointer;">
+                                    <input type="checkbox" class="safety-check" value="Fire extinguisher tersedia"> Fire extinguisher tersedia
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:0.9rem;min-height:44px;cursor:pointer;">
+                                    <input type="checkbox" class="safety-check" value="Area kerja telah dibersihkan"> Area kerja telah dibersihkan
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:0.9rem;min-height:44px;cursor:pointer;">
+                                    <input type="checkbox" class="safety-check" value="Mesin telah di lockout/tagout"> Mesin telah di lockout/tagout
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:0.9rem;min-height:44px;cursor:pointer;">
+                                    <input type="checkbox" class="safety-check" value="Tanda amaran dipasang"> Tanda amaran dipasang
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Set Semula</button>
+                        <button type="submit" class="btn btn-primary">Terbitkan Permit</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">📋 Senarai Work Permit <span class="count-badge" id="workpermitCount">0</span></div>
+                <div id="workpermitEmpty" class="empty-state">
+                    <div class="icon">🔐</div>
+                    <p>Tiada work permit</p>
+                    <p class="sub">Sila terbitkan permit baru menggunakan borang di atas</p>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No Permit</th>
+                                <th>Kontraktor</th>
+                                <th>Jenis Kerja</th>
+                                <th>Tarikh</th>
+                                <th>Status</th>
+                                <th>Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workpermitTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">🤖 AI Insights — Work Permit</div>
+                <div id="workpermitInsightContainer"></div>
+            </div>
+        </div>
+
         <footer>
-            <p>© 2026 Sistem Pengurusan Penyelenggaraan Madrasah | Versi 1.0</p>
+            <p>© 2026 Facilities &amp; Assets Management System | Versi 1.0</p>
         </footer>
+    </div>
+        </main>
     </div>
     </div>
 
@@ -1396,7 +2347,7 @@
 
     <!-- EDIT STATUS MODAL -->
     <div class="modal-overlay" id="editModal">
-        <div class="modal">
+        <div class="modal edit-modal-wide">
             <h3>✏️ Kemaskini Status</h3>
             <form id="editForm">
                 <input type="hidden" id="editId">
@@ -1413,6 +2364,16 @@
                     <div class="form-group">
                         <label>Catatan / Nota</label>
                         <textarea id="editNote" placeholder="Catatan tentang kerja yang dilakukan..." rows="3"></textarea>
+                    </div>
+                    <div class="form-group" id="invUsageGroup">
+                        <label>🧰 Inventory Digunakan</label>
+                        <div class="inv-usage-row">
+                            <select id="editInvSelect" style="flex:2;"><option value="">-- Pilih Item Inventory --</option></select>
+                            <input type="number" id="editInvQty" min="1" value="1" style="flex:0.5;width:70px;" placeholder="Qty">
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="addInvUsageRow()">+ Tambah</button>
+                        </div>
+                        <div id="editInvUsageList" style="margin-top:8px;"></div>
+                        <input type="hidden" id="editInvUsageData" value="[]">
                     </div>
                 </div>
                 <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
@@ -1466,6 +2427,7 @@
             currentUser = username;
             localStorage.setItem('maint_currentUser', username);
             document.getElementById('headerUser').textContent = username;
+            document.getElementById('sidebarUser').textContent = username;
             document.getElementById('reqRequester').value = username;
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('app').style.display = 'block';
@@ -1538,10 +2500,29 @@
                     gAuditLog = [];
                 }
             }
+            // Load assets & schedule & new modules from localStorage
+            try {
+                gAssets = JSON.parse(localStorage.getItem(ASSETS_KEY)) || [];
+                gSchedule = JSON.parse(localStorage.getItem(SCHEDULE_KEY)) || [];
+                gInventory = JSON.parse(localStorage.getItem(INVENTORY_KEY)) || [];
+                gVendors = JSON.parse(localStorage.getItem(VENDORS_KEY)) || [];
+                gWorkPermit = JSON.parse(localStorage.getItem(WORKPERMIT_KEY)) || [];
+            } catch (e) {
+                gAssets = [];
+                gSchedule = [];
+                gInventory = [];
+                gVendors = [];
+                gWorkPermit = [];
+            }
             gDataReady = true;
         }
 
-        function getRequests() { return gRequests; }
+        function getRequests() {
+            gRequests.forEach(r => {
+                if (!r.invUsed) r.invUsed = [];
+            });
+            return gRequests;
+        }
         function getAuditLog() { return gAuditLog; }
 
         function saveToLs() {
@@ -1669,6 +2650,14 @@
 
             const body = document.getElementById('modalBody');
             const days = daysSince(req.date);
+            const invUsedHtml = req.invUsed && req.invUsed.length > 0 ? `
+                <div class="detail-row" style="margin-top:8px;">
+                    <span class="detail-label">🧰 Inventory Digunakan</span>
+                </div>
+                <div style="padding:8px 0;">
+                    ${req.invUsed.map(u => `<span class="inv-usage-badge">${u.name} × ${u.qty}</span>`).join(' ')}
+                </div>
+            ` : '';
             body.innerHTML = `
                 <div class="detail-row"><span class="detail-label">ID</span><span class="detail-value">${req.id}</span></div>
                 <div class="detail-row"><span class="detail-label">Tarikh</span><span class="detail-value">${formatDateFull(req.date)}</span></div>
@@ -1690,6 +2679,7 @@
                 <div class="detail-desc"><strong>Penerangan:</strong><br>${req.description || 'Tiada penerangan'}</div>
                 ${req.images && req.images.length > 0 ? `<div class="detail-row"><span class="detail-label">Gambar</span></div><div class="img-gallery">${req.images.map((img, i) => `<div class="img-gallery-item" onclick="viewImage('${img}')"><img src="${img}" alt="Gambar ${i+1}"></div>`).join('')}</div>` : ''}
                 ${req.note ? `<div class="detail-desc" style="margin-top:8px;background:#FFF3CD;"><strong>Catatan:</strong><br>${req.note}</div>` : ''}
+                ${invUsedHtml}
             `;
             document.getElementById('modalTitle').textContent = '📋 ' + req.title;
             document.getElementById('modalEditBtn').onclick = function() { closeModal(); openEditModal(id); };
@@ -1707,16 +2697,26 @@
             document.getElementById('editId').value = id;
             document.getElementById('editStatus').value = req.status;
             document.getElementById('editNote').value = req.note || '';
+            // Populate inventory usage
+            gEditInvUsage = req.invUsed ? JSON.parse(JSON.stringify(req.invUsed)) : [];
+            populateInvSelect();
+            renderInvUsageList();
             document.getElementById('editModal').classList.add('show');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('show');
         }
 
         document.getElementById('editForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const id = document.getElementById('editId').value;
+
+            // Work permit mode
+            if (document.getElementById('editForm').dataset.wpMode === 'true') {
+                const newStatus = document.getElementById('editStatus').value;
+                updateWPStatus(id, newStatus);
+                closeEditModal();
+                showToast('Status work permit dikemaskini!');
+                return;
+            }
+
             const status = document.getElementById('editStatus').value;
             const note = document.getElementById('editNote').value.trim();
 
@@ -1724,6 +2724,23 @@
             if (idx === -1) return;
 
             const oldStatus = gRequests[idx].status;
+            const oldInvUsed = gRequests[idx].invUsed ? JSON.parse(JSON.stringify(gRequests[idx].invUsed)) : [];
+
+            // Process inventory deductions
+            if (gEditInvUsage.length > 0) {
+                if (oldInvUsed.length > 0) {
+                    restoreInvDeductions(oldInvUsed);
+                }
+                applyInvDeductions(gEditInvUsage);
+                gRequests[idx].invUsed = JSON.parse(JSON.stringify(gEditInvUsage));
+                if (typeof renderInventory === 'function') renderInventory();
+                const invSummary = gEditInvUsage.map(u => u.name + ' ×' + u.qty).join(', ');
+                showToast('Inventory digunakan: ' + invSummary);
+            } else if (oldInvUsed.length > 0) {
+                restoreInvDeductions(oldInvUsed);
+                gRequests[idx].invUsed = [];
+            }
+
             gRequests[idx].status = status;
             gRequests[idx].note = note;
             if (status === 'Selesai' && !gRequests[idx].completedDate) {
@@ -1736,9 +2753,10 @@
                 status: status,
                 note: note,
                 completedDate: gRequests[idx].completedDate,
-                startDate: gRequests[idx].startDate
+                startDate: gRequests[idx].startDate,
+                invUsed: gRequests[idx].invUsed
             });
-            addAuditLog('update', id, gRequests[idx].title + ': ' + oldStatus + ' → ' + status + (note ? ' (' + note + ')' : ''));
+            addAuditLog('update', id, gRequests[idx].title + ': ' + oldStatus + ' → ' + status + (note ? ' (' + note + ')' : '') + (gEditInvUsage.length > 0 ? ' [Inventory: ' + gEditInvUsage.map(u => u.name + '×' + u.qty).join(', ') + ']' : ''));
             closeEditModal();
             showToast('Status berjaya dikemaskini!');
             renderAll();
@@ -1751,6 +2769,11 @@
         document.getElementById('editModal').addEventListener('click', function(e) {
             if (e.target === this) closeEditModal();
         });
+
+        function closeEditModal() {
+            delete document.getElementById('editForm').dataset.wpMode;
+            document.getElementById('editModal').classList.remove('show');
+        }
 
         // ========================================
         // DASHBOARD RENDER
@@ -1878,7 +2901,7 @@
             const count = document.getElementById('trackingCount');
 
             count.textContent = requests.length;
-            document.getElementById('totalBadge').textContent = getRequests().filter(r => r.status !== 'Dibatalkan').length;
+            document.getElementById('totalBadge').textContent = getRequests().filter(r => r.status === 'Menunggu' || r.status === 'Dalam Kerja').length;
 
             if (requests.length === 0) {
                 empty.style.display = 'block';
@@ -1937,6 +2960,7 @@
                         ${req.phone ? `<span>📞 ${req.phone}</span>` : ''}
                     </div>
                     ${req.images && req.images.length > 0 ? `<div class="img-gallery" style="margin:8px 0 0;">${req.images.slice(0, 3).map(img => `<div class="img-gallery-item" style="width:60px;height:60px;" onclick="viewImage('${img}')"><img src="${img}" alt=""></div>`).join('')}${req.images.length > 3 ? `<div class="img-gallery-item" style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:#F0F0F0;font-weight:700;color:var(--gray);font-size:0.9rem;cursor:pointer;" onclick="showDetail('${req.id}')">+${req.images.length - 3}</div>` : ''}</div>` : ''}
+                    ${req.invUsed && req.invUsed.length > 0 ? `<div style="margin:6px 0 0;">${req.invUsed.map(u => `<span class="inv-usage-badge">🧰 ${u.name} × ${u.qty}</span>`).join('')}</div>` : ''}
                     <div class="req-card-actions">
                         <button class="btn btn-sm btn-secondary" onclick="showDetail('${req.id}')">👁️ Detail</button>
                         <button class="btn btn-sm btn-primary" onclick="openEditModal('${req.id}')">✏️ Kemaskini</button>
@@ -2019,7 +3043,8 @@
                 date: new Date().toISOString(),
                 completedDate: null,
                 startDate: null,
-                note: ''
+                note: '',
+                invUsed: []
             };
             gRequests.push(newReq);
             addAuditLog('create', newReq.id, newReq.title + ' - ' + newReq.category + ' di ' + newReq.location);
@@ -2032,6 +3057,10 @@
         function deleteRequest(id) {
             if (!confirm('Padamkan permohonan ini? Tindakan ini tidak boleh dibatalkan.')) return;
             const deleted = gRequests.find(r => r.id === id);
+            if (deleted && deleted.invUsed && deleted.invUsed.length > 0) {
+                restoreInvDeductions(deleted.invUsed);
+                if (typeof renderInventory === 'function') renderInventory();
+            }
             gRequests = gRequests.filter(r => r.id !== id);
             if (deleted) addAuditLog('delete', id, deleted.title + ' - ' + deleted.status);
             apiDeleteRequest(id);
@@ -2065,10 +3094,14 @@
             showToast('Permohonan berjaya dihantar! ID: ' + req.id);
 
             // Switch to tracking tab
+            if (currentSection !== 'facilities') switchSection('facilities');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.sidebar-subitem').forEach(el => el.classList.remove('active'));
             document.querySelector('[data-tab="tracking"]').classList.add('active');
             document.getElementById('tracking').classList.add('active');
+            const subitem = document.querySelector('.sidebar-subitem[data-subtab="tracking"]');
+            if (subitem) subitem.classList.add('active');
             renderTrackingTable();
         });
 
@@ -2086,11 +3119,16 @@
         // ========================================
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
+                const subtab = this.dataset.tab;
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
-                document.getElementById(this.dataset.tab).classList.add('active');
-                if (this.dataset.tab === 'tracking') renderTrackingTable();
+                document.getElementById(subtab).classList.add('active');
+                if (subtab === 'tracking') renderTrackingTable();
+                // Sync sidebar subitem
+                document.querySelectorAll('.sidebar-subitem').forEach(el => el.classList.remove('active'));
+                const subitem = document.querySelector(`.sidebar-subitem[data-subtab="${subtab}"]`);
+                if (subitem) subitem.classList.add('active');
             });
         });
 
@@ -2102,9 +3140,1570 @@
             renderCategorySummary();
             renderRecentRequests();
             renderTrackingTable();
+            renderAssetTable();
+            renderScheduleTable();
+            renderLaporan();
+            renderAssetReport();
+            renderInventory();
+            renderVendors();
+            renderWorkPermit();
         }
 
+        // ========================================
+        // SECTION SWITCHING
+        // ========================================
+        let currentSection = 'facilities';
+        let currentSubtab = 'dashboard';
+
+        function switchSection(section) {
+            currentSection = section;
+
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+
+            const sidebarItem = document.querySelector(`.sidebar-item[data-section="${section}"]`);
+            if (sidebarItem) sidebarItem.classList.add('active');
+
+            const sectionEl = document.getElementById('section-' + section);
+            if (sectionEl) sectionEl.classList.add('active');
+
+            const submenu = document.querySelector('.sidebar-submenu');
+            if (submenu) {
+                if (section === 'facilities') {
+                    submenu.classList.add('open');
+                    sidebarItem.querySelector('.sidebar-arrow').style.transform = 'rotate(180deg)';
+                } else {
+                    submenu.classList.remove('open');
+                }
+            }
+
+            if (section === 'assets') { renderAssetTable(); renderAssetReport(); }
+            if (section === 'schedule') renderScheduleTable();
+            if (section === 'inventory') renderInventory();
+            if (section === 'vendors') renderVendors();
+            if (section === 'workpermit') renderWorkPermit();
+            if (section === 'facilities') {
+                // Re-activate the current subtab
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                const tabBtn = document.querySelector(`.tab-btn[data-tab="${currentSubtab}"]`);
+                if (tabBtn) tabBtn.classList.add('active');
+                const tabContent = document.getElementById(currentSubtab);
+                if (tabContent) tabContent.classList.add('active');
+                if (currentSubtab === 'tracking') renderTrackingTable();
+            }
+
+            closeSidebarMobile();
+        }
+
+        function switchSubtab(subtab) {
+            currentSubtab = subtab;
+            if (currentSection !== 'facilities') {
+                switchSection('facilities');
+                return;
+            }
+            document.querySelectorAll('.sidebar-subitem').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            const subitem = document.querySelector(`.sidebar-subitem[data-subtab="${subtab}"]`);
+            if (subitem) subitem.classList.add('active');
+
+            const tabBtn = document.querySelector(`.tab-btn[data-tab="${subtab}"]`);
+            if (tabBtn) tabBtn.classList.add('active');
+
+            const tabContent = document.getElementById(subtab);
+            if (tabContent) tabContent.classList.add('active');
+
+            if (subtab === 'tracking') renderTrackingTable();
+            if (subtab === 'laporan') {
+                // Set default date range to current month (once)
+                const fromEl = document.getElementById('reportDateFrom');
+                const toEl = document.getElementById('reportDateTo');
+                if (fromEl && !fromEl.value) {
+                    const now = new Date();
+                    fromEl.value = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+                    toEl.value = now.toISOString().split('T')[0];
+                }
+                renderLaporan();
+            }
+        }
+
+        function toggleFacilitiesSubmenu(e) {
+            e.stopPropagation();
+            const submenu = document.querySelector('.sidebar-submenu');
+            const arrow = document.querySelector('.sidebar-arrow');
+            if (submenu.classList.contains('open')) {
+                submenu.classList.remove('open');
+                if (arrow) arrow.style.transform = '';
+            } else {
+                submenu.classList.add('open');
+                if (arrow) arrow.style.transform = 'rotate(180deg)';
+            }
+            if (currentSection !== 'facilities') switchSection('facilities');
+        }
+
+        // Sidebar section click handlers
+        document.querySelectorAll('.sidebar-item[data-section]').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.closest('.sidebar-item-header') || e.target.closest('.sidebar-subitem')) return;
+                const section = this.dataset.section;
+                if (section === 'facilities') {
+                    toggleFacilitiesSubmenu(e);
+                } else {
+                    switchSection(section);
+                }
+            });
+        });
+
+        // Sidebar subitem click handlers
+        document.querySelectorAll('.sidebar-subitem').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                switchSubtab(this.dataset.subtab);
+            });
+        });
+
+        // ========================================
+        // ASSETS MANAGEMENT
+        // ========================================
+        const ASSETS_KEY = 'madrasah_assets_v1';
+        const SCHEDULE_KEY = 'madrasah_schedule_v1';
+        const INVENTORY_KEY = 'fams_inventory_v1';
+        const VENDORS_KEY = 'fams_vendors_v1';
+        const WORKPERMIT_KEY = 'fams_workpermit_v1';
+
+        let gAssets = [];
+        let gSchedule = [];
+        let gInventory = [];
+        let gVendors = [];
+        let gWorkPermit = [];
+
+        function saveAssets() {
+            try { localStorage.setItem(ASSETS_KEY, JSON.stringify(gAssets)); } catch (e) {}
+        }
+
+        function saveSchedule() {
+            try { localStorage.setItem(SCHEDULE_KEY, JSON.stringify(gSchedule)); } catch (e) {}
+        }
+
+        function generateAssetId() {
+            const prefix = 'AST' + new Date().getFullYear();
+            let maxNum = 0;
+            gAssets.forEach(a => {
+                const parts = a.id.split('-');
+                if (parts.length > 1) {
+                    const num = parseInt(parts[1]);
+                    if (num > maxNum) maxNum = num;
+                }
+            });
+            return prefix + '-' + String(maxNum + 1).padStart(3, '0');
+        }
+
+        function generateScheduleId() {
+            const prefix = 'SCH' + new Date().getFullYear();
+            let maxNum = 0;
+            gSchedule.forEach(s => {
+                const parts = s.id.split('-');
+                if (parts.length > 1) {
+                    const num = parseInt(parts[1]);
+                    if (num > maxNum) maxNum = num;
+                }
+            });
+            return prefix + '-' + String(maxNum + 1).padStart(3, '0');
+        }
+
+        function addAsset(data) {
+            const asset = {
+                id: generateAssetId(),
+                name: data.name,
+                category: data.category,
+                location: data.location,
+                purchaseDate: data.purchaseDate,
+                condition: data.condition,
+                notes: data.notes || '',
+                serial: data.serial || '',
+                brand: data.brand || '',
+                model: data.model || '',
+                price: data.price || 0,
+                warranty: data.warranty || '',
+                department: data.department || '',
+                usageStatus: data.usageStatus || 'available',
+                dateRegistered: new Date().toISOString(),
+                maintenanceHistory: [],
+                locationHistory: [{
+                    location: data.location,
+                    date: data.purchaseDate || todayStr(),
+                    reason: 'Lokasi asal pendaftaran'
+                }]
+            };
+            gAssets.push(asset);
+            saveAssets();
+            renderAssetTable();
+            renderAssetReport();
+            showToast('Aset berjaya didaftarkan!');
+            return asset;
+        }
+
+        function deleteAsset(id) {
+            if (!confirm('Padamkan aset ini? Tindakan ini tidak boleh dibatalkan.')) return;
+            gAssets = gAssets.filter(a => a.id !== id);
+            saveAssets();
+            renderAssetTable();
+            renderAssetReport();
+            showToast('Aset berjaya dipadam!');
+        }
+
+        function switchAssetTab(tab) {
+            document.querySelectorAll('.asset-detail-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.asset-detail-pane').forEach(p => p.classList.remove('active'));
+            document.querySelector(`.asset-detail-tab[data-asset-tab="${tab}"]`).classList.add('active');
+            document.getElementById('assetPane-' + tab).classList.add('active');
+        }
+
+        function closeAssetModal() {
+            document.getElementById('assetDetailModal').classList.remove('show');
+        }
+
+        function showAssetDetail(id) {
+            const asset = gAssets.find(a => a.id === id);
+            if (!asset) return;
+            document.getElementById('assetModalTitle').textContent = '📋 ' + asset.name;
+
+            const body = document.getElementById('assetModalBody');
+            const usageStatusLabel = { 'available': 'Tersedia', 'in use': 'Digunakan', 'under repair': 'Dalam Baik Pulih', 'disposed': 'Dilupuskan' }[asset.usageStatus] || asset.usageStatus;
+            const warrantyText = asset.warranty ? formatDate(asset.warranty) : '-';
+            const priceText = asset.price ? 'RM ' + parseFloat(asset.price).toFixed(2) : '-';
+
+            body.innerHTML = `
+                <div class="asset-detail-pane active" id="assetPane-info">
+                    <div class="detail-row"><span class="detail-label">ID Aset</span><span class="detail-value">${asset.id}</span></div>
+                    <div class="detail-row"><span class="detail-label">Nama Aset</span><span class="detail-value" style="font-weight:600;">${asset.name}</span></div>
+                    <div class="detail-row"><span class="detail-label">Kategori</span><span class="detail-value">${asset.category}</span></div>
+                    <div class="detail-row"><span class="detail-label">Lokasi</span><span class="detail-value">${asset.location}</span></div>
+                    <div class="detail-row"><span class="detail-label">Tarikh Belian</span><span class="detail-value">${formatDate(asset.purchaseDate)}</span></div>
+                    <div class="detail-row"><span class="detail-label">Keadaan</span><span class="detail-value">${asset.condition}</span></div>
+                    ${asset.serial ? `<div class="detail-row"><span class="detail-label">No. Siri</span><span class="detail-value">${asset.serial}</span></div>` : ''}
+                    ${asset.brand ? `<div class="detail-row"><span class="detail-label">Jenama</span><span class="detail-value">${asset.brand}</span></div>` : ''}
+                    ${asset.model ? `<div class="detail-row"><span class="detail-label">Model</span><span class="detail-value">${asset.model}</span></div>` : ''}
+                    ${asset.price ? `<div class="detail-row"><span class="detail-label">Harga Belian</span><span class="detail-value">${priceText}</span></div>` : ''}
+                    ${asset.warranty ? `<div class="detail-row"><span class="detail-label">Tamat Waranti</span><span class="detail-value">${warrantyText}</span></div>` : ''}
+                    ${asset.department ? `<div class="detail-row"><span class="detail-label">Jabatan</span><span class="detail-value">${asset.department}</span></div>` : ''}
+                    <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${usageStatusLabel}</span></div>
+                    <div class="detail-row"><span class="detail-label">Daftar</span><span class="detail-value">${formatDateFull(asset.dateRegistered)}</span></div>
+                    ${asset.notes ? `<div class="detail-desc"><strong>Catatan:</strong><br>${asset.notes}</div>` : ''}
+                </div>
+                <div class="asset-detail-pane" id="assetPane-maintenance">
+                    <button class="history-form-toggle" onclick="toggleMaintenanceForm('${asset.id}')">➕ Tambah Rekod Penyelenggaraan</button>
+                    <div id="maintForm-${asset.id}" style="display:none;margin-bottom:12px;" class="form-grid">
+                        <div class="form-group">
+                            <label>Tarikh</label>
+                            <input type="date" id="maintDate-${asset.id}" value="${todayStr()}">
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis</label>
+                            <select id="maintType-${asset.id}">
+                                <option value="Repair">Repair</option>
+                                <option value="Service">Service</option>
+                                <option value="Inspection">Inspection</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Penerangan</label>
+                            <textarea id="maintDesc-${asset.id}" placeholder="Penerangan..." rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Kos (RM)</label>
+                            <input type="number" id="maintCost-${asset.id}" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Teknisi</label>
+                            <input type="text" id="maintTech-${asset.id}" placeholder="Nama teknisi">
+                        </div>
+                        <div class="form-actions" style="grid-column:1/-1;">
+                            <button class="btn btn-sm btn-primary" onclick="addMaintenanceRecord('${asset.id}')">💾 Simpan</button>
+                        </div>
+                    </div>
+                    <div id="maintList-${asset.id}">
+                        ${asset.maintenanceHistory && asset.maintenanceHistory.length > 0
+                            ? asset.maintenanceHistory.sort((a,b) => new Date(b.date) - new Date(a.date)).map(m => `
+                                <div class="history-item">
+                                    <div class="h-date">${formatDate(m.date)}</div>
+                                    <div class="h-title">${m.type}</div>
+                                    <div class="h-desc">${m.description || ''}</div>
+                                    <div class="h-meta">Kos: RM ${parseFloat(m.cost || 0).toFixed(2)} ${m.technician ? '| Teknisi: ' + m.technician : ''}</div>
+                                </div>
+                            `).join('')
+                            : '<div style="color:#999;font-size:0.9rem;">Tiada rekod penyelenggaraan</div>'
+                        }
+                    </div>
+                </div>
+                <div class="asset-detail-pane" id="assetPane-lokasi">
+                    <button class="history-form-toggle" onclick="toggleLocationForm('${asset.id}')">➕ Rekod Lokasi Baru</button>
+                    <div id="locForm-${asset.id}" style="display:none;margin-bottom:12px;" class="form-grid">
+                        <div class="form-group">
+                            <label>Lokasi</label>
+                            <input type="text" id="locName-${asset.id}" placeholder="Lokasi baru">
+                        </div>
+                        <div class="form-group">
+                            <label>Tarikh</label>
+                            <input type="date" id="locDate-${asset.id}" value="${todayStr()}">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Sebab / Catatan</label>
+                            <textarea id="locReason-${asset.id}" placeholder="Sebab pertukaran..." rows="2"></textarea>
+                        </div>
+                        <div class="form-actions" style="grid-column:1/-1;">
+                            <button class="btn btn-sm btn-primary" onclick="addLocationRecord('${asset.id}')">💾 Simpan</button>
+                        </div>
+                    </div>
+                    <div id="locList-${asset.id}">
+                        ${asset.locationHistory && asset.locationHistory.length > 0
+                            ? asset.locationHistory.sort((a,b) => new Date(b.date) - new Date(a.date)).map(l => `
+                                <div class="history-item">
+                                    <div class="h-date">${formatDate(l.date)}</div>
+                                    <div class="h-title">${l.location}</div>
+                                    <div class="h-desc">${l.reason || ''}</div>
+                                </div>
+                            `).join('')
+                            : '<div style="color:#999;font-size:0.9rem;">Tiada rekod lokasi</div>'
+                        }
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('assetDetailModal').classList.add('show');
+        }
+
+        function toggleMaintenanceForm(id) {
+            const f = document.getElementById('maintForm-' + id);
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleLocationForm(id) {
+            const f = document.getElementById('locForm-' + id);
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addMaintenanceRecord(assetId) {
+            const asset = gAssets.find(a => a.id === assetId);
+            if (!asset) return;
+
+            const date = document.getElementById('maintDate-' + assetId).value;
+            const type = document.getElementById('maintType-' + assetId).value;
+            const description = document.getElementById('maintDesc-' + assetId).value.trim();
+            const cost = parseFloat(document.getElementById('maintCost-' + assetId).value) || 0;
+            const technician = document.getElementById('maintTech-' + assetId).value.trim();
+
+            if (!date) { showToast('Sila isi tarikh maintenance.', true); return; }
+
+            if (!asset.maintenanceHistory) asset.maintenanceHistory = [];
+            asset.maintenanceHistory.push({ date, type, description, cost, technician });
+            saveAssets();
+            showAssetDetail(assetId);
+            renderAssetReport();
+            showToast('Rekod penyelenggaraan ditambah!');
+        }
+
+        function addLocationRecord(assetId) {
+            const asset = gAssets.find(a => a.id === assetId);
+            if (!asset) return;
+
+            const location = document.getElementById('locName-' + assetId).value.trim();
+            const date = document.getElementById('locDate-' + assetId).value;
+            const reason = document.getElementById('locReason-' + assetId).value.trim();
+
+            if (!location || !date) { showToast('Sila isi lokasi dan tarikh.', true); return; }
+
+            if (!asset.locationHistory) asset.locationHistory = [];
+            asset.locationHistory.push({ location, date, reason });
+            // Update current location
+            asset.location = location;
+            saveAssets();
+            showAssetDetail(assetId);
+            renderAssetTable();
+            renderAssetReport();
+            showToast('Lokasi direkodkan!');
+        }
+
+        function renderAssetTable() {
+            const tbody = document.getElementById('assetTableBody');
+            const empty = document.getElementById('assetEmpty');
+            const count = document.getElementById('assetCount');
+            if (!tbody) return;
+
+            count.textContent = gAssets.length;
+
+            if (gAssets.length === 0) {
+                empty.style.display = 'block';
+                tbody.innerHTML = '';
+                return;
+            }
+            empty.style.display = 'none';
+            tbody.innerHTML = '';
+
+            const sorted = [...gAssets].sort((a, b) => new Date(b.dateRegistered) - new Date(a.dateRegistered));
+            sorted.forEach(asset => {
+                const tr = document.createElement('tr');
+                const conditionClass = {
+                    'Baik': 'status-completed',
+                    'Isu Kecil': 'status-pending',
+                    'Isu Besar': 'status-cancelled',
+                    'Dilupuskan': 'status-cancelled'
+                }[asset.condition] || 'status-pending';
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${asset.name}</td>
+                    <td>${asset.category}</td>
+                    <td>${asset.location}</td>
+                    <td>${formatDate(asset.purchaseDate)}</td>
+                    <td><span class="status-badge ${conditionClass}">${asset.condition}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="showAssetDetail('${asset.id}')">👁️ Detail</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAsset('${asset.id}')">🗑️ Padam</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('assetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('assetName').value.trim();
+            const category = document.getElementById('assetCategory').value;
+            const location = document.getElementById('assetLocation').value.trim();
+            const purchaseDate = document.getElementById('assetDate').value;
+            const condition = document.getElementById('assetCondition').value;
+            const notes = document.getElementById('assetNotes').value.trim();
+            const serial = document.getElementById('assetSerial').value.trim();
+            const brand = document.getElementById('assetBrand').value.trim();
+            const model = document.getElementById('assetModel').value.trim();
+            const price = parseFloat(document.getElementById('assetPrice').value) || 0;
+            const warranty = document.getElementById('assetWarranty').value;
+            const department = document.getElementById('assetDepartment').value.trim();
+            const usageStatus = document.getElementById('assetStatus').value;
+
+            if (!name || !category || !location || !purchaseDate) {
+                showToast('Sila isi ruangan yang bertanda wajib.', true);
+                return;
+            }
+
+            addAsset({ name, category, location, purchaseDate, condition, notes, serial, brand, model, price, warranty, department, usageStatus });
+            this.reset();
+        });
+
+        function renderAssetReport() {
+            const grid = document.getElementById('assetReportGrid');
+            const insightEl = document.getElementById('assetInsightContainer');
+            if (!grid) return;
+
+            const total = gAssets.length;
+            const byCondition = {};
+            const byCategory = {};
+            let totalValue = 0;
+            let warrantied = 0;
+            let disposed = 0;
+            let needAttention = 0;
+
+            gAssets.forEach(a => {
+                byCondition[a.condition] = (byCondition[a.condition] || 0) + 1;
+                byCategory[a.category] = (byCategory[a.category] || 0) + 1;
+                totalValue += parseFloat(a.price) || 0;
+                if (a.warranty && new Date(a.warranty) > new Date()) warrantied++;
+                if (a.condition === 'Dilupuskan') disposed++;
+                if (a.condition === 'Isu Besar') needAttention++;
+            });
+
+            const sortedConditions = Object.entries(byCondition).sort((a, b) => b[1] - a[1]);
+            const topCondition = sortedConditions.length > 0 ? sortedConditions[0][0] : 'Tiada';
+            const sortedCategories = Object.entries(byCategory).sort((a, b) => b[1] - a[1]);
+
+            grid.innerHTML = `
+                <div class="card card-total">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Jumlah Aset</span></div>
+                        <div class="card-icon icon-total">📦</div>
+                    </div>
+                    <div class="metric-value">${total}</div>
+                    <div class="metric-sub">Keseluruhan</div>
+                </div>
+                <div class="card card-done">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Nilai Jumlah</span></div>
+                        <div class="card-icon icon-done">💰</div>
+                    </div>
+                    <div class="metric-value">RM ${totalValue.toFixed(0)}</div>
+                    <div class="metric-sub">Jumlah harga belian</div>
+                </div>
+                <div class="card card-pending">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Dalam Waranti</span></div>
+                        <div class="card-icon icon-pending">🛡️</div>
+                    </div>
+                    <div class="metric-value">${warrantied}</div>
+                    <div class="metric-sub">Masih dalam tempoh waranti</div>
+                </div>
+                <div class="card card-rate">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Isu Besar</span></div>
+                        <div class="card-icon icon-rate">🚨</div>
+                    </div>
+                    <div class="metric-value">${needAttention}</div>
+                    <div class="metric-sub">Perlu perhatian segera</div>
+                </div>
+            `;
+
+            const insights = [];
+            if (total === 0) {
+                insights.push('💡 Belum ada data aset. Mulakan dengan mendaftarkan aset baru.');
+            } else {
+                insights.push(`📊 Sebanyak <strong>${total}</strong> aset didaftarkan.`);
+                if (topCondition !== 'Tiada') insights.push(`📈 Kebanyakan aset berada dalam keadaan <strong>${topCondition}</strong> (${byCondition[topCondition]} aset).`);
+                insights.push(`💰 Jumlah nilai aset: <strong>RM ${totalValue.toFixed(2)}</strong>.`);
+                insights.push(`🛡️ <strong>${warrantied}</strong> aset masih dalam tempoh waranti.`);
+                if (needAttention > 0) insights.push(`🚨 <strong>${needAttention}</strong> aset mempunyai Isu Besar — perlu tindakan segera.`);
+                if (disposed > 0) insights.push(`♻️ <strong>${disposed}</strong> aset telah dilupuskan.`);
+                if (total > 0) {
+                    const avgValue = totalValue / total;
+                    insights.push(`📐 Purata nilai setiap aset: <strong>RM ${avgValue.toFixed(2)}</strong>.`);
+                }
+                if (sortedCategories.length > 0) {
+                    insights.push(`📂 Kategori paling banyak: <strong>${sortedCategories[0][0]}</strong> (${sortedCategories[0][1]} aset).`);
+                }
+            }
+
+            insightEl.innerHTML = `
+                <div class="section-card" style="margin-top:0;">
+                    <div class="section-title">🤖 AI Insights — Aset</div>
+                    ${insights.map(i => `<div class="asset-insight-item">${i}</div>`).join('')}
+                </div>
+            `;
+        }
+
+        // ========================================
+        // SCHEDULE MANAGEMENT
+        // ========================================
+        function addSchedule(data) {
+            const task = {
+                id: generateScheduleId(),
+                name: data.name,
+                frequency: data.frequency,
+                location: data.location,
+                assignee: data.assignee,
+                notes: data.notes || '',
+                status: 'Menunggu',
+                dateCreated: new Date().toISOString()
+            };
+            gSchedule.push(task);
+            saveSchedule();
+            renderScheduleTable();
+            showToast('Tugasan berjaya ditambah!');
+            return task;
+        }
+
+        function deleteSchedule(id) {
+            if (!confirm('Padamkan tugasan ini? Tindakan ini tidak boleh dibatalkan.')) return;
+            gSchedule = gSchedule.filter(s => s.id !== id);
+            saveSchedule();
+            renderScheduleTable();
+            showToast('Tugasan berjaya dipadam!');
+        }
+
+        function updateScheduleStatus(id, newStatus) {
+            const idx = gSchedule.findIndex(s => s.id === id);
+            if (idx === -1) return;
+            gSchedule[idx].status = newStatus;
+            saveSchedule();
+            renderScheduleTable();
+            showToast('Status tugasan dikemaskini!');
+        }
+
+        // ========================================
+        // LAPORAN & AI INSIGHTS
+        // ========================================
+        function renderLaporan() {
+            const summaryEl = document.getElementById('reportSummary');
+            const tableContainer = document.getElementById('reportTableContainer');
+            const insightEl = document.getElementById('insightContainer');
+            if (!summaryEl) return;
+
+            const reportType = document.getElementById('reportType').value;
+            const dateFrom = document.getElementById('reportDateFrom').value;
+            const dateTo = document.getElementById('reportDateTo').value;
+
+            let requests = [...gRequests];
+            if (dateFrom) requests = requests.filter(r => new Date(r.date) >= new Date(dateFrom));
+            if (dateTo) {
+                const end = new Date(dateTo);
+                end.setHours(23, 59, 59, 999);
+                requests = requests.filter(r => new Date(r.date) <= end);
+            }
+
+            const total = requests.length;
+            const pending = requests.filter(r => r.status === 'Menunggu').length;
+            const progress = requests.filter(r => r.status === 'Dalam Kerja').length;
+            const completed = requests.filter(r => r.status === 'Selesai').length;
+            const cancelled = requests.filter(r => r.status === 'Dibatalkan').length;
+
+            const catCount = {};
+            requests.forEach(r => { catCount[r.category] = (catCount[r.category] || 0) + 1; });
+            const topCat = Object.entries(catCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+            const locCount = {};
+            requests.forEach(r => { locCount[r.location] = (locCount[r.location] || 0) + 1; });
+            const topLoc = Object.entries(locCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+            const urgentOpen = requests.filter(r => r.priority === 'Urgent' && r.status !== 'Selesai').length;
+
+            const completedReqs = requests.filter(r => r.status === 'Selesai' && r.completedDate);
+            let avgDays = 0;
+            if (completedReqs.length > 0) {
+                const totalDays = completedReqs.reduce((sum, r) => {
+                    const start = new Date(r.date);
+                    const end = new Date(r.completedDate);
+                    return sum + Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+                }, 0);
+                avgDays = Math.round(totalDays / completedReqs.length);
+            }
+
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+            const monthRequests = requests.filter(r => {
+                const d = new Date(r.date);
+                return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+            });
+            const lastMonthRequests = requests.filter(r => {
+                const d = new Date(r.date);
+                const lastM = thisMonth === 0 ? 11 : thisMonth - 1;
+                const lastY = thisMonth === 0 ? thisYear - 1 : thisYear;
+                return d.getMonth() === lastM && d.getFullYear() === lastY;
+            });
+            const trend = monthRequests.length - lastMonthRequests.length;
+
+            summaryEl.innerHTML =
+                '<div class="card card-total"><div class="card-header"><div class="card-title-group"><span class="card-title">Jumlah</span></div><div class="card-icon icon-total">\ud83d\udccb</div></div><div class="metric-value">' + total + '</div><div class="metric-sub">Keseluruhan</div></div>' +
+                '<div class="card card-pending"><div class="card-header"><div class="card-title-group"><span class="card-title">Menunggu</span></div><div class="card-icon icon-pending">\u23f3</div></div><div class="metric-value">' + pending + '</div><div class="metric-sub">' + (total > 0 ? Math.round(pending/total*100) : 0) + '% dari jumlah</div></div>' +
+                '<div class="card card-progress"><div class="card-header"><div class="card-title-group"><span class="card-title">Dalam Kerja</span></div><div class="card-icon icon-progress">\ud83d\udd27</div></div><div class="metric-value">' + progress + '</div><div class="metric-sub">' + (total > 0 ? Math.round(progress/total*100) : 0) + '% dari jumlah</div></div>' +
+                '<div class="card card-done"><div class="card-header"><div class="card-title-group"><span class="card-title">Selesai</span></div><div class="card-icon icon-done">\u2705</div></div><div class="metric-value">' + completed + '</div><div class="metric-sub">Purata ' + avgDays + ' hari/selesai</div></div>' +
+                '<div class="card card-rate"><div class="card-header"><div class="card-title-group"><span class="card-title">Kadar Selesai</span></div><div class="card-icon icon-rate">\ud83d\udcc8</div></div><div class="metric-value">' + (total > 0 ? Math.round(completed/total*100) : 0) + '%</div><div class="metric-sub">' + (trend > 0 ? '\u2191 Naik' : trend < 0 ? '\u2193 Turun' : '\u2192 Stabil') + ' ' + Math.abs(trend) + ' dari bulan lepas</div></div>';
+
+            let tableHtml = '';
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ms-MY', { day: '2-digit', month: 'long', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+            const filterInfo = [];
+            if (dateFrom) filterInfo.push('Dari: ' + new Date(dateFrom).toLocaleDateString('ms-MY'));
+            if (dateTo) filterInfo.push('Hingga: ' + new Date(dateTo).toLocaleDateString('ms-MY'));
+
+                        if (reportType === 'work') {
+                const rows = requests.map(function(r, i) {
+                    var days = r.completedDate ? Math.max(1, Math.round((new Date(r.completedDate) - new Date(r.date)) / (1000*60*60*24))) : '-';
+                    var sClass = r.status === 'Selesai' ? 'status-completed' : r.status === 'Dalam Kerja' ? 'status-in-progress' : r.status === 'Dibatalkan' ? 'status-cancelled' : 'status-pending';
+                    return '<tr><td style="text-align:center;"><input type="checkbox" class="report-row-cb" data-req-id="' + r.id + '" checked></td><td>' + (i+1) + '</td><td style="white-space:nowrap;">' + new Date(r.date).toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td><td style="font-weight:600;">' + r.title + '</td><td>' + r.category + '</td><td>' + r.location + '</td><td><span class="status-badge ' + sClass + '">' + r.status + '</span></td><td>' + (days !== '-' ? days + ' hari' : '-') + '</td></tr>';
+                }).join('');
+                tableHtml = '<div class="section-card"><div class="report-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--green-dark);"><h2>Work Request Summary</h2><div style="font-size:0.8rem;color:#666;">Dijana pada ' + dateStr + ', ' + timeStr + (filterInfo.length > 0 ? ' | ' + filterInfo.join(' ') : '') + '</div></div><div style="margin-bottom:8px;font-size:0.8rem;"><label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="reportSelectAll" onchange="toggleReportSelectAll(this)" checked> <strong>Pilih Semua</strong></label></div><div class="table-wrapper"><table class="report-table" id="workReportTable"><thead><tr><th style="width:36px;text-align:center;">Pilih</th><th>#</th><th>Tarikh</th><th>Tajuk</th><th>Kategori</th><th>Lokasi</th><th>Status</th><th>Siap</th></tr></thead><tbody>' + (rows || '<tr><td colspan="8" style="text-align:center;padding:30px;color:#999;">Tiada data</td></tr>') + '</tbody></table></div><div class="report-footer" style="margin-top:15px;font-size:0.75rem;color:#999;text-align:center;">Generated by FAMS \u2014 ' + dateStr + '</div></div>';
+} else if (reportType === 'asset') {
+                var assets = gAssets || [];
+                var condClass = {'Baik':'status-completed','Isu Kecil':'status-in-progress','Isu Besar':'status-pending','Dilupuskan':'status-cancelled'};
+                var useClass = {'available':'status-completed','in use':'status-in-progress','under repair':'status-pending','disposed':'status-cancelled'};
+                var useLabel = {'available':'Tersedia','in use':'Digunakan','under repair':'Dalam Baik Pulih','disposed':'Dilupuskan'};
+                var rows = assets.map(function(a, i) {
+                    return '<tr><td>' + (i+1) + '</td><td style="font-weight:600;">' + a.name + '</td><td>' + a.category + '</td><td>' + a.location + '</td><td><span class="status-badge ' + (condClass[a.condition] || 'status-pending') + '">' + a.condition + '</span></td><td><span class="status-badge ' + (useClass[a.status] || 'status-pending') + '">' + (useLabel[a.status] || a.status) + '</span></td><td>RM ' + parseFloat(a.price || 0).toFixed(2) + '</td></tr>';
+                }).join('');
+                tableHtml = '<div class="section-card"><div class="report-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--green-dark);"><h2>Laporan Aset</h2><div style="font-size:0.8rem;color:#666;">Dijana pada ' + dateStr + ', ' + timeStr + '</div></div><div class="table-wrapper"><table class="report-table"><thead><tr><th>#</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Keadaan</th><th>Status</th><th>Harga</th></tr></thead><tbody>' + (rows || '<tr><td colspan="7" style="text-align:center;padding:30px;color:#999;">Tiada data</td></tr>') + '</tbody></table></div><div class="report-footer" style="margin-top:15px;font-size:0.75rem;color:#999;text-align:center;">Generated by FAMS \u2014 ' + dateStr + '</div></div>';
+            } else if (reportType === 'schedule') {
+                var tasks = gSchedule || [];
+                var sMap = {'Menunggu':'status-pending','Dalam Kerja':'status-in-progress','Selesai':'status-completed'};
+                var rows = tasks.map(function(t, i) {
+                    return '<tr><td>' + (i+1) + '</td><td style="font-weight:600;">' + t.name + '</td><td>' + t.frequency + '</td><td>' + t.location + '</td><td>' + t.assignee + '</td><td><span class="status-badge ' + (sMap[t.status] || 'status-pending') + '">' + t.status + '</span></td></tr>';
+                }).join('');
+                tableHtml = '<div class="section-card"><div class="report-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--green-dark);"><h2>Laporan Jadual Penyelenggaraan</h2><div style="font-size:0.8rem;color:#666;">Dijana pada ' + dateStr + ', ' + timeStr + '</div></div><div class="table-wrapper"><table class="report-table"><thead><tr><th>#</th><th>Tugas</th><th>Kekerapan</th><th>Lokasi</th><th>Diberi Kepada</th><th>Status</th></tr></thead><tbody>' + (rows || '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">Tiada data</td></tr>') + '</tbody></table></div><div class="report-footer" style="margin-top:15px;font-size:0.75rem;color:#999;text-align:center;">Generated by FAMS \u2014 ' + dateStr + '</div></div>';
+            } else if (reportType === 'inventory') {
+                var items = gInventory || [];
+                var rows = items.map(function(i, idx) {
+                    var ratio = i.minStock > 0 ? i.qty / i.minStock : 999;
+                    var level = ratio <= 1 ? 'critical' : ratio <= 1.5 ? 'low' : 'ok';
+                    var sClass = level === 'ok' ? 'stock-ok' : level === 'low' ? 'stock-low' : 'stock-critical';
+                    return '<tr><td>' + (idx+1) + '</td><td style="font-weight:600;">' + i.name + '</td><td>' + i.category + '</td><td><span class="stock-badge ' + sClass + '">' + i.qty + '</span></td><td>' + i.minStock + '</td><td>RM ' + parseFloat(i.price || 0).toFixed(2) + '</td><td>' + (i.supplier || '-') + '</td></tr>';
+                }).join('');
+                var totalVal = items.reduce(function(s, i) { return s + (parseFloat(i.price) || 0) * (i.qty || 0); }, 0);
+                tableHtml = '<div class="section-card"><div class="report-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--green-dark);"><h2>Laporan Inventory</h2><div style="font-size:0.8rem;color:#666;">Dijana pada ' + dateStr + ', ' + timeStr + ' | Jumlah nilai: RM ' + totalVal.toFixed(2) + '</div></div><div class="table-wrapper"><table class="report-table"><thead><tr><th>#</th><th>Nama Item</th><th>Kategori</th><th>Stok</th><th>Min Stok</th><th>Harga/Unit</th><th>Pembekal</th></tr></thead><tbody>' + (rows || '<tr><td colspan="7" style="text-align:center;padding:30px;color:#999;">Tiada data</td></tr>') + '</tbody></table></div><div class="report-footer" style="margin-top:15px;font-size:0.75rem;color:#999;text-align:center;">Generated by FAMS \u2014 ' + dateStr + '</div></div>';
+            }
+            tableContainer.innerHTML = tableHtml;
+
+            let insights = [];
+            if (reportType === 'work') {
+                var cr = total > 0 ? Math.round(completed/total*100) : 0;
+                if (urgentOpen > 0) insights.push('\ud83d\udea8 Terdapat <strong>' + urgentOpen + '</strong> permohonan urgent yang belum selesai.');
+                if (pending > 5) insights.push('\u23f3 <strong>' + pending + '</strong> permohonan masih menunggu.');
+                if (cr < 50) insights.push('\ud83d\udcc9 Kadar selesai hanya <strong>' + cr + '%</strong>. Sasaran 80%.');
+                if (cr >= 80) insights.push('\u2705 Kadar selesai <strong>' + cr + '%</strong> mencapai sasaran.');
+                if (topCat.length > 0) insights.push('\ud83d\udcc2 Kategori paling banyak: <strong>' + topCat[0][0] + '</strong> (' + topCat[0][1] + ').');
+                if (topLoc.length > 0) insights.push('\ud83d\udccd Lokasi paling kerap: <strong>' + topLoc[0][0] + '</strong> (' + topLoc[0][1] + ' kes).');
+                if (avgDays > 7) insights.push('\ud83d\udc0c Purata siap <strong>' + avgDays + ' hari</strong>.');
+                if (avgDays <= 3 && avgDays > 0) insights.push('\u26a1 Purata siap <strong>' + avgDays + ' hari</strong>.');
+                if (cancelled > 2) insights.push('\ud83d\udeab ' + cancelled + ' permohonan dibatalkan.');
+                if (total === 0) insights.push('\ud83d\udca1 Belum ada data.');
+            } else if (reportType === 'asset') {
+                var a = gAssets || [];
+                var tv = a.reduce(function(s, x) { return s + (parseFloat(x.price) || 0); }, 0);
+                var na = a.filter(function(x) { return x.condition === 'Isu Besar' || x.condition === 'Isu Kecil'; }).length;
+                var dp = a.filter(function(x) { return x.status === 'disposed'; }).length;
+                insights.push('\ud83d\udcb0 Jumlah nilai aset: <strong>RM ' + tv.toFixed(2) + '</strong>.');
+                if (na > 0) insights.push('\ud83d\udd27 <strong>' + na + '</strong> aset perlu perhatian.');
+                if (dp > 0) insights.push('\ud83d\uddd1\ufe0f <strong>' + dp + '</strong> aset dilupuskan.');
+                if (a.length === 0) insights.push('\ud83d\udca1 Belum ada aset.');
+            } else if (reportType === 'schedule') {
+                var t = gSchedule || [];
+                var pt = t.filter(function(x) { return x.status === 'Menunggu'; }).length;
+                var dt = t.filter(function(x) { return x.status === 'Selesai'; }).length;
+                insights.push('\ud83d\udccb Jumlah tugas: <strong>' + t.length + '</strong>.');
+                if (pt > 0) insights.push('\u23f3 <strong>' + pt + '</strong> tugas menunggu.');
+                if (dt > 0) insights.push('\u2705 <strong>' + dt + '</strong> tugas selesai.');
+                if (t.length === 0) insights.push('\ud83d\udca1 Belum ada jadual.');
+            } else if (reportType === 'inventory') {
+                var im = gInventory || [];
+                var bm = im.filter(function(x) { return x.qty <= x.minStock; }).length;
+                var tv = im.reduce(function(s, x) { return s + (parseFloat(x.price) || 0) * (x.qty || 0); }, 0);
+                if (bm > 0) insights.push('\u26a0\ufe0f <strong>' + bm + '</strong> item bawah minimum stok.');
+                insights.push('\ud83d\udcb0 Nilai inventory: <strong>RM ' + tv.toFixed(2) + '</strong>.');
+                if (im.length === 0) insights.push('\ud83d\udca1 Belum ada inventory.');
+            }
+
+            insightEl.innerHTML = '<div class="section-card"><div class="section-title">\ud83e\udd16 AI Insights &amp; Suggestions</div>' + (insights.length > 0 ? insights.map(function(i) { return '<div class="insight-item">' + i + '</div>'; }).join('') : '<div class="empty-state"><div class="icon">\ud83e\udd16</div><p>Tiada insight tersedia</p></div>') + '</div>';
+        }
+
+                        function printReport() {
+            var sel = document.getElementById('reportType');
+            var typeName = sel ? sel.options[sel.selectedIndex].text : 'Laporan';
+            var content = document.getElementById('reportTableContainer');
+            if (!content || !content.innerHTML.trim() || content.innerHTML.indexOf('Tiada data') > -1) {
+                showToast('Tiada data untuk dicetak. Sila pilih laporan dengan data.', true);
+                return;
+            }
+            var w = window.open('', '_blank', 'width=1024,height=768');
+            var d = w.document;
+            var now = new Date();
+            var dateStr = now.toLocaleDateString('ms-MY', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            d.write('<!DOCTYPE html><html><head><title>' + typeName + ' \u2014 FAMS</title><style>');
+            d.write('body{font-family:Arial,Helvetica,sans-serif;margin:20mm 15mm;color:#333;}');
+            d.write('h1{color:#1B4332;font-size:1.4rem;margin-bottom:5px;}');
+            d.write('.rh{border-bottom:2px solid #1B4332;padding-bottom:10px;margin-bottom:20px;}');
+            d.write('.rh .sub{color:#666;font-size:0.85rem;}');
+            d.write('table{width:100%;border-collapse:collapse;font-size:0.8rem;margin-top:15px;}');
+            d.write('th{background:#1B4332 !important;color:white !important;padding:8px 10px;text-align:left;font-size:0.7rem;text-transform:uppercase;}');
+            d.write('td{padding:7px 10px;border-bottom:1px solid #E0E0E0;}');
+            d.write('tr:nth-child(even) td{background:#F5FFF5;}');
+            d.write('.activity-section{margin:12px 0 20px 0;padding:10px 14px;background:#F9FFFA;border-left:3px solid #1B4332;}');
+            d.write('.activity-section h4{color:#1B4332;margin:0 0 8px 0;font-size:0.85rem;}');
+            d.write('.activity-item{padding:5px 0;border-bottom:1px solid #E8E8E8;font-size:0.75rem;}');
+            d.write('.activity-item:last-child{border-bottom:none;}');
+            d.write('.activity-user{font-weight:700;color:#1B4332;}');
+            d.write('.activity-time{color:#999;font-size:0.7rem;}');
+            d.write('.status-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:0.7rem;font-weight:600;}');
+            d.write('.status-pending{background:#FFF3CD;color:#856404;}');
+            d.write('.status-in-progress{background:#CCE5FF;color:#004085;}');
+            d.write('.status-completed{background:#D4EDDA;color:#155724;}');
+            d.write('.status-cancelled{background:#F8D7DA;color:#721C24;}');
+            d.write('.stock-badge{display:inline-block;padding:3px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;}');
+            d.write('.stock-ok{background:#D4EDDA;color:#155724;}');
+            d.write('.stock-low{background:#FFF3CD;color:#856404;}');
+            d.write('.stock-critical{background:#F8D7DA;color:#721C24;}');
+            d.write('.footer{margin-top:30px;padding-top:10px;border-top:1px solid #DDD;font-size:0.7rem;color:#999;text-align:center;}');
+            d.write('@page{margin:15mm;}');
+            d.write('</style></head><body>');
+            d.write('<div class="rh"><h1>' + typeName + '</h1><div class="sub">Dijana pada ' + dateStr + '</div></div>');
+
+            var reportType = sel ? sel.value : '';
+            if (reportType === 'work') {
+                var tableContainer = document.getElementById('reportTableContainer');
+                var checkboxes = tableContainer.querySelectorAll('.report-row-cb');
+                var selectedIds = [];
+                checkboxes.forEach(function(cb) {
+                    if (cb.checked) selectedIds.push(cb.getAttribute('data-req-id'));
+                });
+                if (selectedIds.length === 0) {
+                    d.write('<p style="padding:30px;text-align:center;color:#999;">Tiada work request dipilih untuk dicetak.</p>');
+                } else {
+                    var table = tableContainer.querySelector('.report-table');
+                    if (table) {
+                        var clone = table.cloneNode(true);
+                        var tbody = clone.querySelector('tbody');
+                        var allRows = tbody.querySelectorAll('tr');
+                        allRows.forEach(function(row) {
+                            var cb = row.querySelector('.report-row-cb');
+                            if (cb) {
+                                var reqId = cb.getAttribute('data-req-id');
+                                if (selectedIds.indexOf(reqId) === -1) {
+                                    row.remove();
+                                }
+                            }
+                        });
+                        d.write(clone.outerHTML);
+
+                        // Add activity logs for each selected request
+                        d.write('<div style="margin-top:20px;">');
+                        try {
+                            var auditLogs = typeof gAuditLog !== 'undefined' ? gAuditLog : [];
+                            selectedIds.forEach(function(reqId, idx) {
+                                var reqLogs = auditLogs.filter(function(l) { return l.requestId === reqId; }).sort(function(a, b) { return new Date(a.time) - new Date(b.time); });
+                                if (reqLogs.length > 0) {
+                                    d.write('<div class="activity-section"><h4>📜 Log Aktiviti — ' + reqId + '</h4>');
+                                    reqLogs.forEach(function(log) {
+                                        var ld = new Date(log.time);
+                                        var ts = ld.toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                                        d.write('<div class="activity-item"><span class="activity-user">' + log.user + '</span> ' + log.detail + '<br><span class="activity-time">' + ts + '</span></div>');
+                                    });
+                                    d.write('</div>');
+                                }
+                            });
+                        } catch(e) { d.write(''); }
+                        d.write('</div>');
+                    }
+                }
+            } else {
+                d.write(content.innerHTML);
+            }
+
+            d.write('<div class="footer">Generated by Facilities &amp; Assets Management System (FAMS)</div>');
+            d.write('<script>window.onload=function(){window.print();window.close();}<\/script>');
+            d.write('</body></html>');
+            d.close();
+        }
+
+        function toggleReportSelectAll(master) {
+            var cbs = document.querySelectorAll('.report-row-cb');
+            cbs.forEach(function(cb) { cb.checked = master.checked; });
+        }function renderScheduleTable() {
+            const tbody = document.getElementById('scheduleTableBody');
+            const empty = document.getElementById('scheduleEmpty');
+            const count = document.getElementById('scheduleCount');
+            if (!tbody) return;
+
+            count.textContent = gSchedule.length;
+
+            if (gSchedule.length === 0) {
+                empty.style.display = 'block';
+                tbody.innerHTML = '';
+                return;
+            }
+            empty.style.display = 'none';
+            tbody.innerHTML = '';
+
+            const sorted = [...gSchedule].sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));
+            sorted.forEach(task => {
+                const tr = document.createElement('tr');
+                const statusClass = {
+                    'Menunggu': 'status-pending',
+                    'Dalam Kerja': 'status-in-progress',
+                    'Selesai': 'status-completed'
+                }[task.status] || 'status-pending';
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${task.name}</td>
+                    <td>${task.frequency}</td>
+                    <td>${task.location}</td>
+                    <td>${task.assignee}</td>
+                    <td><span class="status-badge ${statusClass}">${task.status}</span></td>
+                    <td>
+                        <select class="btn btn-sm" style="padding:4px 8px;border:2px solid #E0E0E0;border-radius:8px;font-family:inherit;" onchange="updateScheduleStatus('${task.id}', this.value)">
+                            <option value="Menunggu" ${task.status === 'Menunggu' ? 'selected' : ''}>Menunggu</option>
+                            <option value="Dalam Kerja" ${task.status === 'Dalam Kerja' ? 'selected' : ''}>Dalam Kerja</option>
+                            <option value="Selesai" ${task.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
+                        </select>
+                        <button class="btn btn-sm btn-danger" onclick="deleteSchedule('${task.id}')">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('schedName').value.trim();
+            const frequency = document.getElementById('schedFrequency').value;
+            const location = document.getElementById('schedLocation').value.trim();
+            const assignee = document.getElementById('schedAssignee').value.trim();
+            const notes = document.getElementById('schedNotes').value.trim();
+
+            if (!name || !frequency || !location || !assignee) {
+                showToast('Sila isi ruangan yang bertanda wajib.', true);
+                return;
+            }
+
+            addSchedule({ name, frequency, location, assignee, notes });
+            this.reset();
+        });
+
+        // ========================================
+        // MOBILE SIDEBAR TOGGLE
+        // ========================================
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebarMobile() {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+        }
+
+        // ========================================
+        // INVENTORY MANAGEMENT
+        // ========================================
+        function saveInventory() {
+            try { localStorage.setItem(INVENTORY_KEY, JSON.stringify(gInventory)); } catch (e) {}
+        }
+
+        function generateInvId() {
+            const prefix = 'INV' + new Date().getFullYear();
+            let maxNum = 0;
+            gInventory.forEach(i => {
+                const parts = i.id.split('-');
+                if (parts.length > 1) {
+                    const num = parseInt(parts[1]);
+                    if (num > maxNum) maxNum = num;
+                }
+            });
+            return prefix + '-' + String(maxNum + 1).padStart(3, '0');
+        }
+
+        function addInventory(data) {
+            const item = {
+                id: generateInvId(),
+                name: data.name,
+                category: data.category,
+                qty: parseInt(data.qty) || 0,
+                minStock: parseInt(data.minStock) || 0,
+                location: data.location,
+                price: parseFloat(data.price) || 0,
+                supplier: data.supplier || '',
+                dateAdded: new Date().toISOString()
+            };
+            gInventory.push(item);
+            saveInventory();
+            renderInventory();
+            showToast('Item inventory berjaya ditambah!');
+            return item;
+        }
+
+        function deleteInventory(id) {
+            if (!confirm('Padamkan item ini? Tindakan ini tidak boleh dibatalkan.')) return;
+            gInventory = gInventory.filter(i => i.id !== id);
+            saveInventory();
+            renderInventory();
+            showToast('Item berjaya dipadam!');
+        }
+
+        function updateInvQty(id, delta) {
+            const idx = gInventory.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            const newQty = (gInventory[idx].qty || 0) + delta;
+            if (newQty < 0) { showToast('Kuantiti tidak boleh negatif', true); return; }
+            gInventory[idx].qty = newQty;
+            saveInventory();
+            renderInventory();
+            showToast('Stok dikemaskini!');
+        }
+
+        function getStockLevel(item) {
+            const ratio = item.minStock > 0 ? item.qty / item.minStock : 999;
+            if (ratio <= 0.5) return 'critical';
+            if (ratio <= 1) return 'low';
+            return 'ok';
+        }
+
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTableBody');
+            const empty = document.getElementById('inventoryEmpty');
+            const count = document.getElementById('inventoryCount');
+            const insightEl = document.getElementById('inventoryInsightContainer');
+            if (!tbody) return;
+            count.textContent = gInventory.length;
+
+            if (gInventory.length === 0) {
+                empty.style.display = 'block';
+                tbody.innerHTML = '';
+                if (insightEl) insightEl.innerHTML = '<div class="insight-item">💡 Belum ada data inventory. Tambah item baru menggunakan borang di atas.</div>';
+                return;
+            }
+            empty.style.display = 'none';
+            tbody.innerHTML = '';
+
+            const sorted = [...gInventory].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+            sorted.forEach(item => {
+                const level = getStockLevel(item);
+                const levelClass = level === 'ok' ? 'stock-ok' : level === 'low' ? 'stock-low' : 'stock-critical';
+                const levelLabel = level === 'ok' ? 'Mencukupi' : level === 'low' ? 'Hampir Habis' : 'Kritikal';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${item.name} ${item.qty <= item.minStock ? '<span class="stock-reorder-alert">⚠️ Reorder</span>' : ''}</td>
+                    <td>${item.category}</td>
+                    <td><span class="stock-badge ${levelClass}">${item.qty} (${levelLabel})</span></td>
+                    <td>${item.minStock}</td>
+                    <td>${item.location || '-'}</td>
+                    <td>${item.price ? 'RM ' + parseFloat(item.price).toFixed(2) : '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="updateInvQty('${item.id}', 1)">➕</button>
+                        <button class="btn btn-sm btn-secondary" onclick="updateInvQty('${item.id}', -1)">➖</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteInventory('${item.id}')">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // AI Insights
+            const belowMin = gInventory.filter(i => i.qty <= i.minStock).length;
+            const totalValue = gInventory.reduce((sum, i) => sum + (parseFloat(i.price) || 0) * (i.qty || 0), 0);
+            const critical = gInventory.filter(i => getStockLevel(i) === 'critical').length;
+            const low = gInventory.filter(i => getStockLevel(i) === 'low').length;
+            const lowItems = gInventory.filter(i => i.qty <= i.minStock).map(i => i.name);
+
+            let insights = [];
+            if (belowMin > 0) insights.push(`⚠️ <strong>${belowMin}</strong> item berada di bawah atau pada paras minimum stok. Sila buat pesanan semula.`);
+            if (critical > 0) insights.push(`🔴 <strong>${critical}</strong> item dalam status kritikal — perlu tindakan segera!`);
+            if (low > 0) insights.push(`🟡 <strong>${low}</strong> item hampir habis.`);
+            insights.push(`💰 Jumlah nilai inventory: <strong>RM ${totalValue.toFixed(2)}</strong>.`);
+            insights.push(`📦 Jumlah item: <strong>${gInventory.length}</strong>.`);
+
+            if (insightEl) {
+                insightEl.innerHTML = insights.map(i => `<div class="insight-item">${i}</div>`).join('');
+            }
+        }
+
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('invName').value.trim();
+            const category = document.getElementById('invCategory').value;
+            const qty = document.getElementById('invQty').value;
+            const minStock = document.getElementById('invMin').value;
+            const location = document.getElementById('invLocation').value.trim();
+            const price = document.getElementById('invPrice').value;
+            const supplier = document.getElementById('invSupplier').value.trim();
+
+            if (!name || !category || qty === '' || minStock === '' || !location) {
+                showToast('Sila isi ruangan yang bertanda wajib.', true);
+                return;
+            }
+            addInventory({ name, category, qty, minStock, location, price, supplier });
+            this.reset();
+        });
+
+        // ========================================
+        // INVENTORY USAGE (Work Order sync)
+        // ========================================
+        let gEditInvUsage = [];
+
+        function populateInvSelect() {
+            const sel = document.getElementById('editInvSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">-- Pilih Item Inventory --</option>';
+            gInventory.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                const stokLabel = (item.qty || 0) > 0 ? `(Stok: ${item.qty})` : '(Stok: HABIS)';
+                opt.textContent = `${item.name} ${stokLabel}`;
+                if ((item.qty || 0) <= 0) opt.disabled = true;
+                sel.appendChild(opt);
+            });
+        }
+
+        function addInvUsageRow() {
+            const sel = document.getElementById('editInvSelect');
+            const qty = parseInt(document.getElementById('editInvQty').value) || 1;
+            if (!sel.value) { showToast('Sila pilih item inventory.', true); return; }
+            if (qty < 1) { showToast('Kuantiti tidak sah.', true); return; }
+
+            const item = gInventory.find(i => i.id === sel.value);
+            if (!item) { showToast('Item tidak dijumpai dalam inventory.', true); return; }
+            if (qty > (item.qty || 0)) { showToast('Stok tidak mencukupi! Stok semasa: ' + item.qty, true); return; }
+
+            const existing = gEditInvUsage.find(u => u.id === item.id);
+            if (existing) {
+                const totalQty = existing.qty + qty;
+                if (totalQty > (item.qty || 0)) {
+                    showToast('Stok tidak mencukupi! Stok semasa: ' + item.qty + ', sudah guna: ' + existing.qty, true);
+                    return;
+                }
+                existing.qty = totalQty;
+            } else {
+                gEditInvUsage.push({ id: item.id, name: item.name, qty: qty });
+            }
+            renderInvUsageList();
+            document.getElementById('editInvQty').value = 1;
+            sel.value = '';
+        }
+
+        function removeInvUsageRow(id) {
+            gEditInvUsage = gEditInvUsage.filter(u => u.id !== id);
+            renderInvUsageList();
+        }
+
+        function renderInvUsageList() {
+            const container = document.getElementById('editInvUsageList');
+            const hidden = document.getElementById('editInvUsageData');
+            if (!container) return;
+            if (gEditInvUsage.length === 0) {
+                container.innerHTML = '<div style="color:#999;font-size:0.9rem;">Tiada inventory dipilih.</div>';
+                if (hidden) hidden.value = '[]';
+                return;
+            }
+            let html = '';
+            gEditInvUsage.forEach(u => {
+                html += `<div class="inv-usage-item">
+                    <span class="item-name">${u.name}</span>
+                    <span class="item-qty">× ${u.qty}</span>
+                    <span class="item-remove" onclick="removeInvUsageRow('${u.id}')">✕</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+            if (hidden) hidden.value = JSON.stringify(gEditInvUsage);
+        }
+
+        function clearInvUsage() {
+            gEditInvUsage = [];
+            renderInvUsageList();
+        }
+
+        function applyInvDeductions(invUsed) {
+            invUsed.forEach(u => {
+                const idx = gInventory.findIndex(i => i.id === u.id);
+                if (idx !== -1) {
+                    const deduct = Math.min(u.qty, gInventory[idx].qty || 0);
+                    gInventory[idx].qty -= deduct;
+                }
+            });
+            saveInventory();
+        }
+
+        function restoreInvDeductions(invUsed) {
+            invUsed.forEach(u => {
+                const idx = gInventory.findIndex(i => i.id === u.id);
+                if (idx !== -1) {
+                    gInventory[idx].qty = (gInventory[idx].qty || 0) + u.qty;
+                }
+            });
+            saveInventory();
+        }
+
+        // ========================================
+        // VENDOR MANAGEMENT
+        // ========================================
+        function saveVendors() {
+            try { localStorage.setItem(VENDORS_KEY, JSON.stringify(gVendors)); } catch (e) {}
+        }
+
+        function generateVendorId() {
+            const prefix = 'VEN' + new Date().getFullYear();
+            let maxNum = 0;
+            gVendors.forEach(v => {
+                const parts = v.id.split('-');
+                if (parts.length > 1) {
+                    const num = parseInt(parts[1]);
+                    if (num > maxNum) maxNum = num;
+                }
+            });
+            return prefix + '-' + String(maxNum + 1).padStart(3, '0');
+        }
+
+        function addVendor(data) {
+            const vendor = {
+                id: generateVendorId(),
+                name: data.name,
+                service: data.service,
+                phone: data.phone,
+                email: data.email || '',
+                address: data.address || '',
+                status: data.status || 'Active',
+                notes: data.notes || '',
+                rating: 0,
+                serviceHistory: [],
+                dateAdded: new Date().toISOString()
+            };
+            gVendors.push(vendor);
+            saveVendors();
+            renderVendors();
+            showToast('Vendor berjaya didaftarkan!');
+            return vendor;
+        }
+
+        function deleteVendor(id) {
+            if (!confirm('Padamkan vendor ini? Tindakan ini tidak boleh dibatalkan.')) return;
+            gVendors = gVendors.filter(v => v.id !== id);
+            saveVendors();
+            renderVendors();
+            showToast('Vendor berjaya dipadam!');
+        }
+
+        function setVendorRating(id, rating) {
+            const idx = gVendors.findIndex(v => v.id === id);
+            if (idx === -1) return;
+            gVendors[idx].rating = rating;
+            saveVendors();
+            renderVendors();
+            showToast('Rating vendor dikemaskini!');
+        }
+
+        function renderVendors() {
+            const tbody = document.getElementById('vendorTableBody');
+            const empty = document.getElementById('vendorEmpty');
+            const count = document.getElementById('vendorCount');
+            const insightEl = document.getElementById('vendorInsightContainer');
+            if (!tbody) return;
+            count.textContent = gVendors.length;
+
+            if (gVendors.length === 0) {
+                empty.style.display = 'block';
+                tbody.innerHTML = '';
+                if (insightEl) insightEl.innerHTML = '<div class="insight-item">💡 Belum ada vendor didaftarkan. Daftar vendor baru menggunakan borang di atas.</div>';
+                return;
+            }
+            empty.style.display = 'none';
+            tbody.innerHTML = '';
+
+            const sorted = [...gVendors].sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+            sorted.forEach(vendor => {
+                const statusClass = vendor.status === 'Active' ? 'status-completed' : 'status-cancelled';
+                const stars = Array(5).fill('').map((_, i) =>
+                    `<span class="star ${i < vendor.rating ? 'active' : ''}" onclick="setVendorRating('${vendor.id}', ${i + 1})">★</span>`
+                ).join('');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${vendor.name}</td>
+                    <td>${vendor.service}</td>
+                    <td>${vendor.phone}</td>
+                    <td><span class="status-badge ${statusClass}">${vendor.status}</span></td>
+                    <td><div class="star-rating">${stars}</div></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="showVendorDetail('${vendor.id}')">👁️ Detail</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteVendor('${vendor.id}')">🗑️ Padam</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // AI Insights
+            const activeCount = gVendors.filter(v => v.status === 'Active').length;
+            const avgRating = gVendors.reduce((sum, v) => sum + (v.rating || 0), 0) / gVendors.length;
+            const topService = {};
+            gVendors.forEach(v => { topService[v.service] = (topService[v.service] || 0) + 1; });
+            const topServiceEntry = Object.entries(topService).sort((a, b) => b[1] - a[1])[0];
+
+            let insights = [];
+            insights.push(`🏢 Jumlah vendor: <strong>${gVendors.length}</strong>.`);
+            insights.push(`✅ Vendor aktif: <strong>${activeCount}</strong>.`);
+            if (gVendors.length > 0) insights.push(`⭐ Purata rating: <strong>${avgRating.toFixed(1)}</strong> / 5.`);
+            if (topServiceEntry) insights.push(`📂 Perkhidmatan paling banyak: <strong>${topServiceEntry[0]}</strong> (${topServiceEntry[1]} vendor).`);
+            const unrated = gVendors.filter(v => !v.rating).length;
+            if (unrated > 0) insights.push(`⭐ <strong>${unrated}</strong> vendor belum diberi rating. Sila nilai prestasi mereka.`);
+
+            if (insightEl) {
+                insightEl.innerHTML = insights.map(i => `<div class="insight-item">${i}</div>`).join('');
+            }
+        }
+
+        function showVendorDetail(id) {
+            const vendor = gVendors.find(v => v.id === id);
+            if (!vendor) return;
+            const stars = Array(5).fill('').map((_, i) =>
+                `<span class="star ${i < vendor.rating ? 'active' : ''}" style="font-size:1.3rem;">★</span>`
+            ).join('');
+            let historyHtml = '';
+            if (vendor.serviceHistory && vendor.serviceHistory.length > 0) {
+                vendor.serviceHistory.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(h => {
+                    historyHtml += `<div class="history-item"><div class="h-date">${formatDate(h.date)}</div><div class="h-title">${h.service}</div><div class="h-desc">${h.description || ''}</div></div>`;
+                });
+            } else {
+                historyHtml = '<div style="color:#999;font-size:0.9rem;">Tiada rekod perkhidmatan</div>';
+            }
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <div class="detail-row"><span class="detail-label">Nama</span><span class="detail-value" style="font-weight:600;">${vendor.name}</span></div>
+                <div class="detail-row"><span class="detail-label">Perkhidmatan</span><span class="detail-value">${vendor.service}</span></div>
+                <div class="detail-row"><span class="detail-label">Telefon</span><span class="detail-value">${vendor.phone}</span></div>
+                <div class="detail-row"><span class="detail-label">Emel</span><span class="detail-value">${vendor.email || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Alamat</span><span class="detail-value">${vendor.address || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value"><span class="status-badge ${vendor.status === 'Active' ? 'status-completed' : 'status-cancelled'}">${vendor.status}</span></span></div>
+                <div class="detail-row"><span class="detail-label">Rating</span><span class="detail-value"><div class="star-rating" style="font-size:1.3rem;">${stars}</div></span></div>
+                ${vendor.notes ? `<div class="detail-desc"><strong>Catatan:</strong><br>${vendor.notes}</div>` : ''}
+                <div style="margin-top:16px;">
+                    <div style="font-weight:700;color:var(--green-dark);margin-bottom:8px;">📜 Sejarah Perkhidmatan</div>
+                    ${historyHtml}
+                </div>
+            `;
+            document.getElementById('modalTitle').textContent = '🏢 ' + vendor.name;
+            document.getElementById('modalEditBtn').style.display = 'none';
+            document.getElementById('detailModal').classList.add('show');
+            // Restore edit button visibility when modal closes naturally
+            document.querySelector('#detailModal .btn-secondary').onclick = function() {
+                closeModal();
+                document.getElementById('modalEditBtn').style.display = '';
+            };
+        }
+
+        // Override modal close to restore edit button
+        const origCloseModal = closeModal;
+        closeModal = function() {
+            origCloseModal();
+            const editBtn = document.getElementById('modalEditBtn');
+            if (editBtn) editBtn.style.display = '';
+        };
+
+        document.getElementById('vendorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('venName').value.trim();
+            const service = document.getElementById('venService').value;
+            const phone = document.getElementById('venPhone').value.trim();
+            const email = document.getElementById('venEmail').value.trim();
+            const address = document.getElementById('venAddress').value.trim();
+            const status = document.getElementById('venStatus').value;
+            const notes = document.getElementById('venNotes').value.trim();
+            if (!name || !service || !phone) {
+                showToast('Sila isi ruangan yang bertanda wajib.', true);
+                return;
+            }
+            addVendor({ name, service, phone, email, address, status, notes });
+            this.reset();
+        });
+
+        // ========================================
+        // WORK PERMIT MANAGEMENT
+        // ========================================
+        function saveWorkPermit() {
+            try { localStorage.setItem(WORKPERMIT_KEY, JSON.stringify(gWorkPermit)); } catch (e) {}
+        }
+
+        function generateWPId() {
+            const prefix = 'WP' + new Date().getFullYear();
+            let maxNum = 0;
+            gWorkPermit.forEach(w => {
+                const parts = w.id.split('-');
+                if (parts.length > 1) {
+                    const num = parseInt(parts[1]);
+                    if (num > maxNum) maxNum = num;
+                }
+            });
+            return prefix + '-' + String(maxNum + 1).padStart(3, '0');
+        }
+
+        const WP_STATUSES = ['Permohonan', 'Diluluskan', 'Dalam Kerja', 'Selesai', 'Ditutup'];
+
+        function addWorkPermit(data) {
+            const permit = {
+                id: generateWPId(),
+                noPermit: data.noPermit || generateWPId(),
+                contractor: data.contractor,
+                workType: data.workType,
+                location: data.location,
+                startDate: data.startDate,
+                endDate: data.endDate,
+                supervisor: data.supervisor,
+                safetyNotes: data.safetyNotes || '',
+                safetyChecklist: data.safetyChecklist || [],
+                status: 'Permohonan',
+                dateCreated: new Date().toISOString()
+            };
+            gWorkPermit.push(permit);
+            saveWorkPermit();
+            renderWorkPermit();
+            showToast('Work permit berjaya diterbitkan! No: ' + permit.noPermit);
+            return permit;
+        }
+
+        function deleteWorkPermit(id) {
+            if (!confirm('Padamkan work permit ini? Tindakan ini tidak boleh dibatalkan.')) return;
+            gWorkPermit = gWorkPermit.filter(w => w.id !== id);
+            saveWorkPermit();
+            renderWorkPermit();
+            showToast('Work permit berjaya dipadam!');
+        }
+
+        function updateWPStatus(id, newStatus) {
+            const idx = gWorkPermit.findIndex(w => w.id === id);
+            if (idx === -1) return;
+            gWorkPermit[idx].status = newStatus;
+            saveWorkPermit();
+            renderWorkPermit();
+            showToast('Status work permit dikemaskini!');
+        }
+
+        function renderWorkPermit() {
+            const tbody = document.getElementById('workpermitTableBody');
+            const empty = document.getElementById('workpermitEmpty');
+            const count = document.getElementById('workpermitCount');
+            const insightEl = document.getElementById('workpermitInsightContainer');
+            if (!tbody) return;
+            count.textContent = gWorkPermit.length;
+
+            // Set auto permit number
+            const noField = document.getElementById('wpNo');
+            if (noField) noField.value = generateWPId();
+
+            if (gWorkPermit.length === 0) {
+                empty.style.display = 'block';
+                tbody.innerHTML = '';
+                if (insightEl) insightEl.innerHTML = '<div class="insight-item">💡 Belum ada work permit. Terbitkan permit baru menggunakan borang di atas.</div>';
+                return;
+            }
+            empty.style.display = 'none';
+            tbody.innerHTML = '';
+
+            const sorted = [...gWorkPermit].sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated));
+            sorted.forEach(permit => {
+                const statusColors = {
+                    'Permohonan': 'status-pending',
+                    'Diluluskan': 'status-in-progress',
+                    'Dalam Kerja': 'status-in-progress',
+                    'Selesai': 'status-completed',
+                    'Ditutup': 'status-cancelled'
+                };
+                const statusClass = statusColors[permit.status] || 'status-pending';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600;color:var(--green);">${permit.noPermit}</td>
+                    <td>${permit.contractor}</td>
+                    <td>${permit.workType}</td>
+                    <td>${formatDate(permit.startDate)} — ${formatDate(permit.endDate)}</td>
+                    <td><span class="status-badge ${statusClass}">${permit.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="showWPDetail('${permit.id}')">👁️ Detail</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteWorkPermit('${permit.id}')">🗑️ Padam</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // AI Insights
+            const total = gWorkPermit.length;
+            const permohonan = gWorkPermit.filter(w => w.status === 'Permohonan').length;
+            const diluluskan = gWorkPermit.filter(w => w.status === 'Diluluskan').length;
+            const dalamKerja = gWorkPermit.filter(w => w.status === 'Dalam Kerja').length;
+            const selesai = gWorkPermit.filter(w => w.status === 'Selesai').length;
+            const ditutup = gWorkPermit.filter(w => w.status === 'Ditutup').length;
+            const active = gWorkPermit.filter(w => !['Selesai', 'Ditutup'].includes(w.status)).length;
+
+            let insights = [];
+            insights.push(`🔐 Jumlah work permit: <strong>${total}</strong>.`);
+            if (permohonan > 0) insights.push(`📋 <strong>${permohonan}</strong> permit dalam status Permohonan — perlu diluluskan.`);
+            if (diluluskan > 0) insights.push(`✅ <strong>${diluluskan}</strong> permit telah Diluluskan.`);
+            if (dalamKerja > 0) insights.push(`🔧 <strong>${dalamKerja}</strong> permit sedang Dalam Kerja.`);
+            if (selesai > 0) insights.push(`✔️ <strong>${selesai}</strong> permit telah Selesai.`);
+            if (active > 0) insights.push(`🔄 <strong>${active}</strong> permit masih aktif.`);
+            if (total === 0) insights.push(`💡 Belum ada data work permit. Terbitkan permit baru.`);
+
+            if (insightEl) {
+                insightEl.innerHTML = insights.map(i => `<div class="insight-item">${i}</div>`).join('');
+            }
+        }
+
+        function showWPDetail(id) {
+            const permit = gWorkPermit.find(w => w.id === id);
+            if (!permit) return;
+            const statusColors = {
+                'Permohonan': 'status-pending',
+                'Diluluskan': 'status-in-progress',
+                'Dalam Kerja': 'status-in-progress',
+                'Selesai': 'status-completed',
+                'Ditutup': 'status-cancelled'
+            };
+
+            // Workflow
+            const currentIdx = WP_STATUSES.indexOf(permit.status);
+            const workflowHtml = WP_STATUSES.map((s, i) => {
+                let cls = '';
+                if (i < currentIdx) cls = 'completed';
+                else if (i === currentIdx) cls = 'current';
+                const icon = i < currentIdx ? '✅' : i === currentIdx ? '📌' : '○';
+                return `<span class="workflow-step ${cls}"><span class="wf-icon">${icon}</span> ${s}</span>`;
+            }).join('<span class="workflow-arrow"> → </span>');
+
+            // Safety checklist
+            const safetyItems = ['APD lengkap', 'Fire extinguisher tersedia', 'Area kerja telah dibersihkan', 'Mesin telah di lockout/tagout', 'Tanda amaran dipasang'];
+            const checklistHtml = safetyItems.map(item => {
+                const checked = permit.safetyChecklist && permit.safetyChecklist.includes(item);
+                return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;"><span>${checked ? '✅' : '⬜'}</span> <span>${item}</span></div>`;
+            }).join('');
+
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <div class="detail-row"><span class="detail-label">No Permit</span><span class="detail-value" style="font-weight:600;color:var(--green);">${permit.noPermit}</span></div>
+                <div class="detail-row"><span class="detail-label">Kontraktor</span><span class="detail-value">${permit.contractor}</span></div>
+                <div class="detail-row"><span class="detail-label">Jenis Kerja</span><span class="detail-value">${permit.workType}</span></div>
+                <div class="detail-row"><span class="detail-label">Lokasi</span><span class="detail-value">${permit.location}</span></div>
+                <div class="detail-row"><span class="detail-label">Tarikh Mula</span><span class="detail-value">${formatDate(permit.startDate)}</span></div>
+                <div class="detail-row"><span class="detail-label">Tarikh Tamat</span><span class="detail-value">${formatDate(permit.endDate)}</span></div>
+                <div class="detail-row"><span class="detail-label">Penyelia</span><span class="detail-value">${permit.supervisor}</span></div>
+                <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value"><span class="status-badge ${statusColors[permit.status]}">${permit.status}</span></span></div>
+                <div style="margin-top:16px;padding:12px;background:var(--gray-light);border-radius:10px;">
+                    <div style="font-weight:700;color:var(--green-dark);margin-bottom:8px;font-size:0.9rem;">🔁 Aliran Kerja</div>
+                    <div class="workflow-steps">${workflowHtml}</div>
+                </div>
+                ${permit.safetyNotes ? `<div class="detail-desc" style="margin-top:12px;"><strong>⚠️ Catatan Keselamatan:</strong><br>${permit.safetyNotes}</div>` : ''}
+                <div style="margin-top:12px;">
+                    <div style="font-weight:700;color:var(--green-dark);margin-bottom:6px;">✅ Senarai Semak Keselamatan</div>
+                    ${checklistHtml}
+                </div>
+            `;
+            document.getElementById('modalTitle').textContent = '🔐 ' + permit.noPermit + ' — ' + permit.contractor;
+
+            // Show status update options
+            const editBtn = document.getElementById('modalEditBtn');
+            editBtn.style.display = '';
+            editBtn.onclick = function() {
+                closeModal();
+                const currentStatus = permit.status;
+                const nextIdx = WP_STATUSES.indexOf(currentStatus);
+                const options = WP_STATUSES.map((s, i) =>
+                    `<option value="${s}" ${i === nextIdx ? 'selected' : ''}>${s}</option>`
+                ).join('');
+                document.getElementById('editId').value = id;
+                document.getElementById('editStatus').innerHTML = options;
+                document.getElementById('editNote').value = '';
+                document.getElementById('editModal').classList.add('show');
+                    // Set work permit mode on edit form
+                    document.getElementById('editForm').dataset.wpMode = 'true';
+            };
+
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        // Override the modal edit button close behavior when viewing work permit
+        document.querySelector('#detailModal .btn-secondary').addEventListener('click', function() {
+            const editBtn = document.getElementById('modalEditBtn');
+            if (editBtn) editBtn.style.display = '';
+        });
+
+        document.getElementById('workpermitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const contractor = document.getElementById('wpContractor').value.trim();
+            const workType = document.getElementById('wpWorkType').value.trim();
+            const location = document.getElementById('wpLocation').value.trim();
+            const startDate = document.getElementById('wpStart').value;
+            const endDate = document.getElementById('wpEnd').value;
+            const supervisor = document.getElementById('wpSupervisor').value.trim();
+            const safetyNotes = document.getElementById('wpSafetyNotes').value.trim();
+
+            if (!contractor || !workType || !location || !startDate || !endDate || !supervisor) {
+                showToast('Sila isi ruangan yang bertanda wajib.', true);
+                return;
+            }
+
+            const safetyChecklist = Array.from(document.querySelectorAll('.safety-check:checked')).map(cb => cb.value);
+            const noPermit = document.getElementById('wpNo').value;
+
+            addWorkPermit({ contractor, workType, location, startDate, endDate, supervisor, safetyNotes, safetyChecklist, noPermit });
+            this.reset();
+            document.getElementById('wpNo').value = generateWPId();
+        });
+
+        // ========================================
         // Init: load data from server, then check session
+        // ========================================
         (async function() {
             await loadData();
             if (currentUser && USERS[currentUser]) {

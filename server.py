@@ -42,6 +42,10 @@ def init_db():
             detail TEXT
         )
     ''')
+    try:
+        c.execute('ALTER TABLE requests ADD COLUMN invUsed TEXT DEFAULT "[]"')
+    except:
+        pass
     conn.commit()
     conn.close()
 
@@ -73,6 +77,13 @@ class APIHandler:
                         r['images'] = []
                 else:
                     r['images'] = []
+                if r['invUsed']:
+                    try:
+                        r['invUsed'] = json.loads(r['invUsed'])
+                    except:
+                        r['invUsed'] = []
+                else:
+                    r['invUsed'] = []
             conn.close()
             return 200, rows
 
@@ -80,14 +91,15 @@ class APIHandler:
             data = json.loads(body)
             conn = get_conn()
             conn.execute('''
-                INSERT INTO requests (id, title, category, location, requester, phone, priority, description, images, status, date, completedDate, startDate, note)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO requests (id, title, category, location, requester, phone, priority, description, images, status, date, completedDate, startDate, note, invUsed)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 data['id'], data['title'], data['category'], data['location'],
                 data['requester'], data.get('phone', ''), data['priority'],
                 data.get('description', ''), json.dumps(data.get('images', [])),
                 data['status'], data['date'], data.get('completedDate'),
-                data.get('startDate'), data.get('note', '')
+                data.get('startDate'), data.get('note', ''),
+                json.dumps(data.get('invUsed', []))
             ))
             conn.commit()
             conn.close()
@@ -102,11 +114,12 @@ class APIHandler:
                 conn.close()
                 return 404, {'error': 'Not found'}
             conn.execute('''
-                UPDATE requests SET status=?, note=?, completedDate=?, startDate=?
+                UPDATE requests SET status=?, note=?, completedDate=?, startDate=?, invUsed=?
                 WHERE id=?
             ''', (
                 data['status'], data.get('note', ''),
                 data.get('completedDate'), data.get('startDate'),
+                json.dumps(data.get('invUsed', [])),
                 req_id
             ))
             conn.commit()

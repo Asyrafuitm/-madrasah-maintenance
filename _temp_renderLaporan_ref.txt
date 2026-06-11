@@ -1,0 +1,122 @@
+function renderLaporan() {
+            const summaryEl = document.getElementById('reportSummary');
+            const insightEl = document.getElementById('insightContainer');
+            if (!summaryEl) return;
+
+            const requests = gRequests;
+            const total = requests.length;
+            const pending = requests.filter(r => r.status === 'Menunggu').length;
+            const progress = requests.filter(r => r.status === 'Dalam Kerja').length;
+            const completed = requests.filter(r => r.status === 'Selesai').length;
+            const cancelled = requests.filter(r => r.status === 'Dibatalkan').length;
+
+            // Category breakdown
+            const catCount = {};
+            requests.forEach(r => { catCount[r.category] = (catCount[r.category] || 0) + 1; });
+            const topCat = Object.entries(catCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+            // Location breakdown
+            const locCount = {};
+            requests.forEach(r => { locCount[r.location] = (locCount[r.location] || 0) + 1; });
+            const topLoc = Object.entries(locCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+            // Priority breakdown
+            const urgentOpen = requests.filter(r => r.priority === 'Urgent' && r.status !== 'Selesai').length;
+
+            // Average completion time
+            const completedReqs = requests.filter(r => r.status === 'Selesai' && r.completedDate);
+            let avgDays = 0;
+            if (completedReqs.length > 0) {
+                const totalDays = completedReqs.reduce((sum, r) => {
+                    const start = new Date(r.date);
+                    const end = new Date(r.completedDate);
+                    return sum + Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
+                }, 0);
+                avgDays = Math.round(totalDays / completedReqs.length);
+            }
+
+            // Monthly trend
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+            const monthRequests = requests.filter(r => {
+                const d = new Date(r.date);
+                return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+            });
+            const lastMonthRequests = requests.filter(r => {
+                const d = new Date(r.date);
+                const lastM = thisMonth === 0 ? 11 : thisMonth - 1;
+                const lastY = thisMonth === 0 ? thisYear - 1 : thisYear;
+                return d.getMonth() === lastM && d.getFullYear() === lastY;
+            });
+            const trend = monthRequests.length - lastMonthRequests.length;
+
+            // Summary cards
+            summaryEl.innerHTML = `
+                <div class="card card-total">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Jumlah</span></div>
+                        <div class="card-icon icon-total">📋</div>
+                    </div>
+                    <div class="metric-value">${total}</div>
+                    <div class="metric-sub">Keseluruhan</div>
+                </div>
+                <div class="card card-pending">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Menunggu</span></div>
+                        <div class="card-icon icon-pending">⏳</div>
+                    </div>
+                    <div class="metric-value">${pending}</div>
+                    <div class="metric-sub">${total > 0 ? Math.round(pending/total*100) : 0}% dari jumlah</div>
+                </div>
+                <div class="card card-progress">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Dalam Kerja</span></div>
+                        <div class="card-icon icon-progress">🔧</div>
+                    </div>
+                    <div class="metric-value">${progress}</div>
+                    <div class="metric-sub">${total > 0 ? Math.round(progress/total*100) : 0}% dari jumlah</div>
+                </div>
+                <div class="card card-done">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Selesai</span></div>
+                        <div class="card-icon icon-done">✅</div>
+                    </div>
+                    <div class="metric-value">${completed}</div>
+                    <div class="metric-sub">Purata ${avgDays} hari/selesai</div>
+                </div>
+                <div class="card card-rate">
+                    <div class="card-header">
+                        <div class="card-title-group"><span class="card-title">Kadar Selesai</span></div>
+                        <div class="card-icon icon-rate">📈</div>
+                    </div>
+                    <div class="metric-value">${total > 0 ? Math.round(completed/total*100) : 0}%</div>
+                    <div class="metric-sub">${trend > 0 ? '↑ Naik' : trend < 0 ? '↓ Turun' : '→ Stabil'} ${Math.abs(trend)} dari bulan lepas</div>
+                </div>
+            `;
+
+            // AI Insights
+            let insights = [];
+            const completionRate = total > 0 ? Math.round(completed/total*100) : 0;
+
+            if (urgentOpen > 0) insights.push(`🚨 Terdapat <strong>${urgentOpen}</strong> permohonan urgent yang masih belum diselesaikan. Sila ambil tindakan segera.`);
+            if (pending > 5) insights.push(`⏳ <strong>${pending}</strong> permohonan masih menunggu. Pertimbangkan untuk menambah sumber tenaga kerja.`);
+            if (completionRate < 50) insights.push(`📉 Kadar selesai hanya <strong>${completionRate}%</strong>. Sasaran minima 80% perlu dicapai.`);
+            if (completionRate >= 80) insights.push(`✅ Tahniah! Kadar selesai <strong>${completionRate}%</strong> mencapai sasaran.`);
+            if (topCat.length > 0) insights.push(`📂 Kategori paling banyak: <strong>${topCat[0][0]}</strong> (${topCat[0][1]} permohonan). Fokuskan pemeriksaan berkala.`);
+            if (topLoc.length > 0) insights.push(`📍 Lokasi paling kerap bermasalah: <strong>${topLoc[0][0]}</strong> (${topLoc[0][1]} kes).`);
+            if (avgDays > 7) insights.push(`🐌 Purata masa penyelesaian <strong>${avgDays} hari</strong> — melebihi 7 hari. Perlu penambahbaikan proses.`);
+            if (avgDays <= 3) insights.push(`⚡ Purata masa penyelesaian <strong>${avgDays} hari</strong> — sangat cekap!`);
+            if (trend > 0) insights.push(`📈 Permohonan bulan ini naik <strong>${trend}</strong> berbanding bulan lepas.`);
+            if (trend < 0 && trend !== 0) insights.push(`📉 Permohonan bulan ini turun <strong>${Math.abs(trend)}</strong> berbanding bulan lepas.`);
+            if (cancelled > 2) insights.push(`🚫 ${cancelled} permohonan telah dibatalkan. Semak semula proses kelulusan.`);
+            if (total === 0) insights.push(`💡 Belum ada data permohonan. Mulakan dengan membuat permohonan baru.`);
+
+            insightEl.innerHTML = `
+                <div class="section-card">
+                    <div class="section-title">🤖 AI Insights &amp; Suggestions</div>
+                    ${insights.length > 0 ? insights.map(i => `<div class="insight-item">${i}</div>`).join('') : '<div class="empty-state"><div class="icon">🤖</div><p>Tiada insight tersedia</p></div>'}
+                </div>
+            `;
+        }
+
+        
